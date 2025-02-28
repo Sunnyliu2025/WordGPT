@@ -10,8 +10,8 @@
   <DisplayName DefaultValue="WordGPT" />
   <Description
     DefaultValue="Adding the power of deepseek to Word for the ultimate writing experience!" />
-  IconUrl DefaultValue="<IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png" />
-  <HighResolutionhttps://localhost:3000/assets/icon-64.png" />
+  <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png" />
   <SupportUrl DefaultValue="https://www.deepseek.com/help" />
   <AppDomains>
     <AppDomain>https://www.deepseek.com</AppDomain>

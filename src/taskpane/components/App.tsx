@@ -32,11 +32,11 @@ export default function App() {
 
     try {
       const response = await axios.post(
-        "https://api.deepseek-chat.com/v1/completions",
+        "https://api.deepseek.com/v1/chat/completions",
         {
-          model: "deepseek-chat", // 修改模型名称
-          prompt: prompt,
-          max_tokens: 1024,
+          model: "deepseek-chat",
+          messages: [{ role: "user", content: prompt }], // 使用messages数组
+          max_tokens: 2048,
           temperature: 0.7,
         },
         {
@@ -44,16 +44,29 @@ export default function App() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${apiKey}`,
           },
-          timeout: 20000, // 增加 timeout 参数
+          timeout: 30000,
         }
       );
 
-      setGeneratedText(response.data.choices[0].text);
+      // 修正响应数据路径
+      setGeneratedText(response.data.choices[0].message.content);
+      setLoading(false);
     } catch (error: any) {
-      setError(error.message);
-      setApiKey("");
+      if (error.response) {
+        const status = error.response.status;
+        setError(`Error: ${status} - ${error.response.data?.message || "Unknown error"}`);
+        // 仅在授权失败时清除API密钥
+        if (status === 401) {
+          setApiKey("");
+          localStorage.removeItem("apiKey");
+        }
+      } else if (error.request) {
+        setError("Error: No response received from server.");
+      } else {
+        setError(`Error: ${error.message}`);
+      }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const onInsert = async () => {

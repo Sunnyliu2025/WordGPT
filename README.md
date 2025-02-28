@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://github.com/filippofinke/WordGPT">
+  <a href="https://github.com/Sunnyliu2025/WordGPT">
     <img src="assets/robot.png" alt="Logo" height="100">
   </a>
 
@@ -9,12 +9,12 @@
   <p align="center">
     Enhance your writing experience with WordGPT, the Microsoft Office add-in that brings deepseek's language model directly into Word.
     <br />
-    <a href="https://github.com/filippofinke/WordGPT"><strong>Explore the docs »</strong></a>
+    <a href=https://github.com/Sunnyliu2025/WordGPT><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/filippofinke/WordGPT/issues">Report Bug</a>
+    <a href="https://github.com/Sunnyliu2025/WordGPT/issues">Report Bug</a>
     ·
-    <a href="https://github.com/filippofinke/WordGPT/issues">Request Feature</a>
+    <a href="https://github.com/Sunnyliu2025/WordGPT/issues">Request Feature</a>
   </p>
 
 ![ezgif-2-3b6a659c22](https://user-images.githubusercontent.com/37296364/221949219-4aba4e03-125f-4d81-a58b-7cffa4c9c03c.gif)
@@ -45,7 +45,7 @@ cd ~/Library/Containers/com.microsoft.Word/Data/Documents/wef
 ```
 3. Download the manifest file.
 ```sh
-wget https://word-gpt-filippofinke.vercel.app/manifest.xml -O wordgpt.xml
+wget https://word-gpt-Sunnyliu2025.vercel.app/manifest.xml -O wordgpt.xml
 ```
 4. Open Word.
 
@@ -69,14 +69,14 @@ WordGPT is released under the MIT License. See the LICENSE file for more details
 
 👤 **Filippo Finke**
 
-- Website: https://filippofinke.ch
-- Github: [@filippofinke](https://github.com/filippofinke)
-- LinkedIn: [@filippofinke](https://linkedin.com/in/filippofinke)
+- Website: https://Sunnyliu2025.ch
+- Github: [@Sunnyliu2025](https://github.com/Sunnyliu2025)
+- LinkedIn: [@Sunnyliu2025](https://linkedin.com/in/Sunnyliu2025)
 
 ## Show your support
 
 Give a ⭐️ if this project helped you!
 
-<a href="https://www.buymeacoffee.com/filippofinke">
-  <img src="https://github.com/filippofinke/filippofinke/raw/main/images/buymeacoffe.png" alt="Buy Me A McFlurry">
+<a href="https://www.buymeacoffee.com/Sunnyliu2025">
+  <img src="https://github.com/Sunnyliu2025/Sunnyliu2025/raw/main/images/buymeacoffe.png" alt="Buy Me A McFlurry">
 </a>
