@@ -16,7 +16,7 @@ export default function Login({ onSave }: LoginProps) {
         }}
         value={token}
         onChange={(_, newValue: string) => setToken(newValue || "")}
-        placeholder={"Insert your OpenAI API key here"}
+        placeholder={"Insert your  API key here"}
       />
       <Center
         style={{

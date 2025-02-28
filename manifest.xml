@@ -5,16 +5,16 @@
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>11c11698-af49-4deb-b5b1-309fed5efeca</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Contoso</ProviderName>
+  <ProviderName>deepseek</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="WordGPT" />
   <Description
-    DefaultValue="Adding the power of ChatGPT to Word for the ultimate writing experience!" />
-  <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png" />
-  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png" />
-  <SupportUrl DefaultValue="https://www.contoso.com/help" />
+    DefaultValue="Adding the power of deepseek to Word for the ultimate writing experience!" />
+  IconUrl DefaultValue="<IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png" />
+  <HighResolutionhttps://localhost:3000/assets/icon-64.png" />
+  <SupportUrl DefaultValue="https://www.deepseek.com/help" />
   <AppDomains>
-    <AppDomain>https://www.contoso.com</AppDomain>
+    <AppDomain>https://www.deepseek.com</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Document" />

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DefaultButton, MessageBar, MessageBarType, ProgressIndicator, TextField } from "@fluentui/react";
-import { Configuration, OpenAIApi } from "openai";
+import axios from "axios"; // 修改为 axios
 import Center from "./Center";
 import Container from "./Container";
 import Login from "./Login";
@@ -20,15 +20,7 @@ export default function App() {
     }
   }, []);
 
-  const openai = React.useMemo(() => {
-    return new OpenAIApi(
-      new Configuration({
-        apiKey,
-      })
-    );
-  }, [apiKey]);
-
-  const saveApiKey = (key) => {
+  const saveApiKey = (key: string) => {
     setApiKey(key);
     localStorage.setItem("apiKey", key);
     setError("");
@@ -37,20 +29,31 @@ export default function App() {
   const onClick = async () => {
     setGeneratedText("");
     setLoading(true);
-    let completion;
+
     try {
-      completion = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: prompt,
-        max_tokens: 1024,
-        temperature: 0.7,
-      });
-    } catch (error) {
+      const response = await axios.post(
+        "https://api.deepseek-chat.com/v1/completions",
+        {
+          model: "deepseek-chat", // 修改模型名称
+          prompt: prompt,
+          max_tokens: 1024,
+          temperature: 0.7,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          timeout: 20000, // 增加 timeout 参数
+        }
+      );
+
+      setGeneratedText(response.data.choices[0].text);
+    } catch (error: any) {
       setError(error.message);
       setApiKey("");
     }
     setLoading(false);
-    setGeneratedText(completion.data.choices[0].text);
   };
 
   const onInsert = async () => {
@@ -74,14 +77,9 @@ export default function App() {
             value={prompt}
             rows={5}
             multiline={true}
-            onChange={(_, newValue: string) => setPrompt(newValue || "")}
+            onChange={(_, newValue?: string) => setPrompt(newValue || "")}
           ></TextField>
-          <Center
-            style={{
-              marginTop: "10px",
-              marginBottom: "10px",
-            }}
-          >
+          <Center>
             <DefaultButton iconProps={{ iconName: "Robot" }} onClick={onClick}>
               Generate
             </DefaultButton>
@@ -89,13 +87,7 @@ export default function App() {
           {loading && <ProgressIndicator label="Generating text..." />}
           {generatedText && (
             <div>
-              <p
-                style={{
-                  textAlign: "justify",
-                }}
-              >
-                {generatedText}
-              </p>
+              <p className="generated-text">{generatedText}</p>
               <Center>
                 <DefaultButton iconProps={{ iconName: "Add" }} onClick={onInsert}>
                   Insert text

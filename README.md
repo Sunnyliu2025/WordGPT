@@ -7,7 +7,7 @@
   <h3 align="center">WordGPT</h3>
 
   <p align="center">
-    Enhance your writing experience with WordGPT, the Microsoft Office add-in that brings ChatGPT's language model directly into Word.
+    Enhance your writing experience with WordGPT, the Microsoft Office add-in that brings deepseek's language model directly into Word.
     <br />
     <a href="https://github.com/filippofinke/WordGPT"><strong>Explore the docs »</strong></a>
     <br />
