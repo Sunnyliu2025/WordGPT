@@ -84,7 +84,7 @@
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description"
-          DefaultValue="To start using WordGPT, please provide your OpenAI API key and save it." />
+          DefaultValue="To start using WordGPT, please provide your DEEPSEEK API key and save it." />
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Click to Show a Taskpane" />
       </bt:LongStrings>
     </Resources>

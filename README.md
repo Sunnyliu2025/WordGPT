@@ -24,7 +24,7 @@
 
 
 ## About The Project
-WordGPT is project that integrates OpenAI's powerful language model, text-davinci-003, directly into Microsoft Word. With WordGPT, users can benefit from the advanced natural language processing capabilities of text-davinci-003 to generate text.
+WordGPT is project that integrates DEEPSEEK's powerful language model, DEEPSEEK-V3, directly into Microsoft Word. With WordGPT, users can benefit from the advanced natural language processing capabilities of DEEPSEEK-V3 to generate text.
 
 ## Getting Started
 To get started with WordGPT, you will need to sideload the add-in into Microsoft Word. Sideloading allows you to install and test add-ins that are not yet available on the Microsoft Store.
@@ -67,7 +67,7 @@ WordGPT is released under the MIT License. See the LICENSE file for more details
 
 ## Author
 
-👤 **Filippo Finke**
+👤 **Sunnyliu2025**
 
 - Website: https://Sunnyliu2025.ch
 - Github: [@Sunnyliu2025](https://github.com/Sunnyliu2025)
