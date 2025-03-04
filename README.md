@@ -45,7 +45,7 @@ cd ~/Library/Containers/com.microsoft.Word/Data/Documents/wef
 ```
 3. Download the manifest file.
 ```sh
-wget https://word-gpt-Sunnyliu2025.vercel.app/manifest.xml -O wordgpt.xml
+wget https://github.com/Sunnyliu2025/WordGPT/blob/main//manifest.xml -O wordgpt.xml
 ```
 4. Open Word.
 
