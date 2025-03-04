@@ -51,6 +51,7 @@ export default function App() {
       // 修正响应数据路径
       setGeneratedText(response.data.choices[0].message.content);
       setLoading(false);
+      setError("");
     } catch (error: any) {
       if (error.response) {
         const status = error.response.status;

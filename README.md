@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/Sunnyliu2025/WordGPT">
-    <img src="assets/robot.png" alt="Logo" height="100">
+    <img src="assets/deekseeklogo.png" alt="Logo" height="100">
   </a>
 
   <br />
@@ -69,9 +69,7 @@ WordGPT is released under the MIT License. See the LICENSE file for more details
 
 👤 **Sunnyliu2025**
 
-- Website: https://Sunnyliu2025.ch
 - Github: [@Sunnyliu2025](https://github.com/Sunnyliu2025)
-- LinkedIn: [@Sunnyliu2025](https://linkedin.com/in/Sunnyliu2025)
 
 ## Show your support
 
