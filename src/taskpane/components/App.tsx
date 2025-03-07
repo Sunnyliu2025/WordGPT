@@ -1,5 +1,8 @@
 import * as React from "react";
-import { DefaultButton, MessageBar, MessageBarType, ProgressIndicator, TextField } from "@fluentui/react";
+import { initializeIcons } from "@fluentui/font-icons-mdl2";
+initializeIcons();
+import { CommandButton, MessageBar, MessageBarType, ProgressIndicator, TextField } from "@fluentui/react";
+import { CommandBarButton } from "@fluentui/react/lib/Button";
 import axios from "axios"; // 修改为 axios
 import Center from "./Center";
 import Container from "./Container";
@@ -36,7 +39,7 @@ export default function App() {
         {
           model: "deepseek-chat",
           messages: [{ role: "user", content: prompt }], // 使用messages数组
-          max_tokens: 2048,
+          max_tokens: 4096,
           temperature: 0.7,
         },
         {
@@ -44,7 +47,7 @@ export default function App() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${apiKey}`,
           },
-          timeout: 30000,
+          timeout: 60000,
         }
       );
 
@@ -94,21 +97,21 @@ export default function App() {
             onChange={(_, newValue?: string) => setPrompt(newValue || "")}
           ></TextField>
           <Center>
-            <DefaultButton iconProps={{ iconName: "Robot" }} onClick={onClick}>
+            <CommandBarButton iconProps={{ iconName: "Send" }} onClick={onClick}>
               Generate
-            </DefaultButton>
+            </CommandBarButton>
           </Center>
           {loading && <ProgressIndicator label="Generating text..." />}
           {generatedText && (
             <div>
               <p className="generated-text">{generatedText}</p>
               <Center>
-                <DefaultButton iconProps={{ iconName: "Add" }} onClick={onInsert}>
+                <CommandButton iconProps={{ iconName: "Add" }} onClick={onInsert}>
                   Insert text
-                </DefaultButton>
-                <DefaultButton iconProps={{ iconName: "Copy" }} onClick={onCopy}>
+                </CommandButton>
+                <CommandButton iconProps={{ iconName: "ExploreContent" }} onClick={onCopy}>
                   Copy text
-                </DefaultButton>
+                </CommandButton>
               </Center>
             </div>
           )}
