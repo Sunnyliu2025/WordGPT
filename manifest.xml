@@ -13,7 +13,7 @@
   <HighResolutionIconUrl DefaultValue="https://sunnyliu2025.github.io/WordGPT/assets/icon-64.png" />
   <SupportUrl DefaultValue="https://www.deepseek.com/" />
   <AppDomains>
-    <AppDomain>https://github.com/Sunnyliu2025/WordGPT</AppDomain>
+    <AppDomain>https://sunnyliu2025.github.io /</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Document" />
