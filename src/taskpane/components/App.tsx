@@ -92,12 +92,54 @@ export default function App() {
           <TextField
             placeholder="Enter prompt here"
             value={prompt}
-            rows={5}
+            rows={8}
             multiline={true}
             onChange={(_, newValue?: string) => setPrompt(newValue || "")}
           ></TextField>
           <Center>
-            <CommandBarButton iconProps={{ iconName: "Send" }} onClick={onClick}>
+            <CommandBarButton
+              iconProps={{ iconName: "Send" }}
+              onClick={onClick}
+              styles={{
+                root: {
+                  backgroundColor: "#0078d4",
+                  color: "white",
+                  margin: "10px 0",
+                  borderRadius: "4px",
+                  padding: "10px 20px",
+                  minWidth: "120px",
+                  transition: "all 0.2s ease",
+                  border: "none",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  ":hover": {
+                    backgroundColor: "#106ebe",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                  },
+                  ":active": {
+                    backgroundColor: "#005a9e",
+                    transform: "translateY(1px)",
+                  },
+                  ":disabled": {
+                    backgroundColor: "#ccc",
+                    cursor: "not-allowed",
+                  },
+                },
+                icon: {
+                  color: "white",
+                  fontSize: "16px",
+                  marginRight: "8px",
+                },
+                label: {
+                  fontWeight: 600,
+                  fontSize: "14px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
+                },
+                flexContainer: {
+                  justifyContent: "center",
+                },
+              }}
+            >
               Generate
             </CommandBarButton>
           </Center>
@@ -109,7 +151,7 @@ export default function App() {
                 <CommandButton iconProps={{ iconName: "Add" }} onClick={onInsert}>
                   Insert text
                 </CommandButton>
-                <CommandButton iconProps={{ iconName: "ExploreContent" }} onClick={onCopy}>
+                <CommandButton iconProps={{ iconName: "Copy" }} onClick={onCopy}>
                   Copy text
                 </CommandButton>
               </Center>
