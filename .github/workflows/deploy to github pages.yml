@@ -16,7 +16,8 @@ permissions:
   id-token: write
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# Setting `cancel-in-progress: false` ensures that ongoing deployments are not interrupted,
+# allowing production deployments to complete reliably even if new commits are pushed.
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -34,23 +35,24 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '18.x'
           cache: 'npm'
       - name: Install dependencies
-        run: npm ci
-      - name: Build project
-        run: npm run build
+        run: |
+          npm ci
+          npm run build
         env:
           CI: true
+          PUBLIC_URL: ${{ github.server_url }}/${{ github.repository }}/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './build'  # Upload build directory
+          path: './dist'  # Upload build directory
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # 自动生成的令牌
+          token: ${{ secrets.GITHUB_TOKEN }}  # Automatically generated token
