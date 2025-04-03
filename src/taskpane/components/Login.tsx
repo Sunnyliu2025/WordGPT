@@ -5,6 +5,7 @@ import Center from "./Center";
 interface LoginProps {
   onSave: (token: string) => void;
 }
+
 export default function Login({ onSave }: LoginProps) {
   const [token, setToken] = React.useState<string>("");
 
@@ -16,7 +17,7 @@ export default function Login({ onSave }: LoginProps) {
         }}
         value={token}
         onChange={(_, newValue: string) => setToken(newValue || "")}
-        placeholder={"Insert your  API key here"}
+        placeholder={"Insert your API key here"}
       />
       <Center
         style={{
@@ -25,7 +26,7 @@ export default function Login({ onSave }: LoginProps) {
       >
         <DefaultButton
           iconProps={{
-            iconName: "Save",
+            iconName: "SaveAs",
           }}
           onClick={() => onSave(token)}
         >

@@ -24,6 +24,15 @@
   "scripts": {
     "build": "webpack --mode production && cp index.html dist/index.html",
     "build:dev": "webpack --mode development",
+    "build:prod": "webpack --mode production --optimize-minimize",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "predeploy": "npm run build:prod",
+    "deploy": "gh-pages -d dist",
+    "release": "semantic-release",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "dev-server": "webpack serve --mode development",
     "lint": "office-addin-lint check",
     "lint:fix": "office-addin-lint fix",
@@ -78,7 +87,9 @@
     "typescript": "^4.3.5",
     "webpack": "^5.73.0",
     "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "4.7.4"
+    "webpack-dev-server": "4.7.4",
+    "rimraf": "^5.0.5",
+    "gh-pages": "^6.1.1"
   },
   "prettier": "office-addin-prettier-config",
   "browserslist": [
