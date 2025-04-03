@@ -98,7 +98,7 @@ export default function App() {
           ></TextField>
           <Center>
             <CommandBarButton
-              iconProps={{ iconName: "Send" }}
+              iconProps={{ iconName: "SendMail" }}
               onClick={onClick}
               styles={{
                 root: {
@@ -148,7 +148,7 @@ export default function App() {
             <div>
               <p className="generated-text">{generatedText}</p>
               <Center>
-                <CommandButton iconProps={{ iconName: "Add" }} onClick={onInsert}>
+                <CommandButton iconProps={{ iconName: "AddTo" }} onClick={onInsert}>
                   Insert text
                 </CommandButton>
                 <CommandButton iconProps={{ iconName: "Copy" }} onClick={onCopy}>
