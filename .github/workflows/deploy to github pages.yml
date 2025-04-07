@@ -8,12 +8,19 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:              # 允许手动触发
+    inputs:
+      deploy:
+        description: 'Deploy to GitHub Pages'
+        required: false
+        default: 'true'
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write    # 添加 actions 权限
+  deployments: write # 添加部署权限
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # Setting `cancel-in-progress: false` ensures that ongoing deployments are not interrupted,
@@ -29,6 +36,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    permissions: write-all  # 添加任务级别的权限
     steps:
       - name: Checkout
         uses: actions/checkout@v4
