@@ -3,6 +3,7 @@
 const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const webpack = require("webpack");
 
 const urlDev = "https://localhost:3000/";
@@ -47,6 +48,10 @@ module.exports = async (env, options) => {
           use: ["react-hot-loader/webpack", "ts-loader"],
         },
         {
+          test: /\.css$/,
+          use: [MiniCssExtractPlugin.loader, "css-loader"],
+        },
+        {
           test: /\.html$/,
           exclude: /node_modules/,
           use: "html-loader",
@@ -86,6 +91,9 @@ module.exports = async (env, options) => {
             },
           },
         ],
+      }),
+      new MiniCssExtractPlugin({
+        filename: "[name].[contenthash].css",
       }),
       new HtmlWebpackPlugin({
         filename: "taskpane.html",
