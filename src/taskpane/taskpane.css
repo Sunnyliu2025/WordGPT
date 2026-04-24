@@ -30,19 +30,71 @@ body {
 }
 
 /* ===== Fluent UI 图标字体 ===== */
+/*
+ * 注意：initializeIcons() 会通过 registerIcons() → fontFace() → Stylesheet.insertRule()
+ * 动态注入 @font-face 规则。但在 Office Add-in WebView 中，CSSStyleSheet.insertRule()
+ * 对 @font-face 的支持可能失败，导致字体文件无法加载，图标无法渲染。
+ *
+ * 因此，这里静态声明所有需要的 @font-face 规则作为备用方案。
+ *
+ * Fluent UI v8 将图标分散在多个子集字体文件中，每个使用独立的 font-family 名称：
+ *   - FabricMDL2Icons   → fabric-icons-a13498cf.woff  (主集：Mail, Edit, 等)
+ *   - FabricMDL2Icons-0 → fabric-icons-0-467ee27f.woff (Send: \uE724)
+ *   - FabricMDL2Icons-1 → fabric-icons-1-4d521695.woff (SaveAs: \uE792)
+ *   - FabricMDL2Icons-2 → fabric-icons-2-63c99abf.woff (Copy: \uE8C8)
+ *   - FabricMDL2Icons-5 → fabric-icons-5-f95ba260.woff (AddTo: \uECC8)
+ *
+ * CDN 来源必须与 @fluentui/font-icons-mdl2 一致：
+ *   https://res.cdn.office.net/files/fabric-cdn-prod_20250310.001/assets/icons/
+ *
+ * font-display: swap 确保字体加载期间文本保持可见，避免 FOIT (Flash of Invisible Text)
+ */
+
 @font-face {
   font-family: 'FabricMDL2Icons';
-  src: url('https://static2.sharepointonline.com/files/fabric/assets/icons/fabricmdl2icons-11.woff2') format('woff2'),
-       url('https://static2.sharepointonline.com/files/fabric/assets/icons/fabricmdl2icons-11.woff') format('woff');
+  src: url('https://res.cdn.office.net/files/fabric-cdn-prod_20250310.001/assets/icons/fabric-icons-a13498cf.woff') format('woff');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FabricMDL2Icons-0';
+  src: url('https://res.cdn.office.net/files/fabric-cdn-prod_20250310.001/assets/icons/fabric-icons-0-467ee27f.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FabricMDL2Icons-1';
+  src: url('https://res.cdn.office.net/files/fabric-cdn-prod_20250310.001/assets/icons/fabric-icons-1-4d521695.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FabricMDL2Icons-2';
+  src: url('https://res.cdn.office.net/files/fabric-cdn-prod_20250310.001/assets/icons/fabric-icons-2-63c99abf.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FabricMDL2Icons-5';
+  src: url('https://res.cdn.office.net/files/fabric-cdn-prod_20250310.001/assets/icons/fabric-icons-5-f95ba260.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* 确保所有图标容器正确显示 */
 .ms-Icon,
 [class^="ms-Icon--"],
 [class*=" ms-Icon--"],
-i[icon-name] {
+i[data-icon-name] {
   font-family: 'FabricMDL2Icons', 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, sans-serif;
   display: inline-block;
 }
