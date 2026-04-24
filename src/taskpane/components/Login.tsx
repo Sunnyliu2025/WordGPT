@@ -10,7 +10,7 @@ export default function Login({ onSave }: LoginProps) {
   const [token, setToken] = React.useState<string>("");
 
   return (
-    <>
+    <div style={{ marginTop: "24px" }}>
       <TextField
         style={{
           width: "100%",
@@ -21,7 +21,7 @@ export default function Login({ onSave }: LoginProps) {
       />
       <Center
         style={{
-          marginTop: "10px",
+          marginTop: "16px",
         }}
       >
         <DefaultButton
@@ -29,10 +29,17 @@ export default function Login({ onSave }: LoginProps) {
             iconName: "SaveAs",
           }}
           onClick={() => onSave(token)}
+          styles={{
+            root: {
+              minWidth: "140px",
+              height: "36px",
+              borderRadius: "4px",
+            },
+          }}
         >
           Save API key
         </DefaultButton>
       </Center>
-    </>
+    </div>
   );
 }
