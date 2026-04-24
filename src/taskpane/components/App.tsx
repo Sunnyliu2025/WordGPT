@@ -1,10 +1,11 @@
 import * as React from "react";
 import { CommandButton, MessageBar, MessageBarType, ProgressIndicator, TextField } from "@fluentui/react";
 import { CommandBarButton } from "@fluentui/react/lib/Button";
-import axios from "axios"; // 修改为 axios
+import axios from "axios";
 import Center from "./Center";
 import Container from "./Container";
 import Login from "./Login";
+import "./initializeIcons";
 /* global Word, localStorage, navigator */
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
       setApiKey(key);
     }
   }, []);
+
   const saveApiKey = (key: string) => {
     setApiKey(key);
     localStorage.setItem("apiKey", key);
@@ -35,7 +37,7 @@ export default function App() {
         "https://api.deepseek.com/v1/chat/completions",
         {
           model: "deepseek-v4-flash",
-          messages: [{ role: "user", content: prompt }], // 使用messages数组
+          messages: [{ role: "user", content: prompt }],
           max_tokens: 8192,
           temperature: 0.7,
         },
@@ -48,7 +50,6 @@ export default function App() {
         }
       );
 
-      // 修正响应数据路径
       setGeneratedText(response.data.choices[0].message.content);
       setLoading(false);
       setError("");
@@ -56,7 +57,6 @@ export default function App() {
       if (error.response) {
         const status = error.response.status;
         setError(`Error: ${status} - ${error.response.data?.message || "Unknown error"}`);
-        // 仅在授权失败时清除API密钥
         if (status === 401) {
           setApiKey("");
           localStorage.removeItem("apiKey");
@@ -92,7 +92,7 @@ export default function App() {
             rows={8}
             multiline={true}
             onChange={(_, newValue?: string) => setPrompt(newValue || "")}
-          ></TextField>
+          />
           <Center>
             <CommandBarButton
               iconProps={{ iconName: "Send" }}
@@ -101,30 +101,32 @@ export default function App() {
                 root: {
                   backgroundColor: "#0078d4",
                   color: "white",
-                  margin: "10px 0",
-                  borderRadius: "4px",
-                  padding: "10px 20px",
-                  minWidth: "120px",
-                  transition: "all 0.2s ease",
+                  margin: "12px 0",
+                  borderRadius: "6px",
+                  padding: "0 28px",
+                  minWidth: "140px",
+                  height: "40px",
                   border: "none",
-                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                  ":hover": {
-                    backgroundColor: "#106ebe",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                  },
-                  ":active": {
-                    backgroundColor: "#005a9e",
-                    transform: "translateY(1px)",
-                  },
-                  ":disabled": {
-                    backgroundColor: "#ccc",
-                    cursor: "not-allowed",
+                  boxShadow: "0 2px 8px rgba(0, 120, 212, 0.3)",
+                  transition: "all 0.25s ease",
+                  selectors: {
+                    ":hover": {
+                      backgroundColor: "#106ebe",
+                      boxShadow: "0 4px 12px rgba(0, 120, 212, 0.4)",
+                    },
+                    ":active": {
+                      backgroundColor: "#005a9e",
+                    },
+                    ":disabled": {
+                      backgroundColor: "#ccc",
+                      cursor: "not-allowed",
+                      boxShadow: "none",
+                    },
                   },
                 },
                 icon: {
                   color: "white",
                   fontSize: "16px",
-                  marginRight: "8px",
                 },
                 label: {
                   fontWeight: 600,
@@ -140,25 +142,33 @@ export default function App() {
               Generate
             </CommandBarButton>
           </Center>
-          {loading && <ProgressIndicator label="Generating text..." />}
+          {loading && (
+            <div className="loading-container">
+              <ProgressIndicator label="Generating text..." />
+            </div>
+          )}
           {generatedText && (
             <div>
-              <p className="generated-text">{generatedText}</p>
-              <Center>
-                <CommandButton iconProps={{ iconName: "AddTo" }} onClick={onInsert}>
+              <div className="generated-text">{generatedText}</div>
+              <div className="button-group">
+                <CommandButton className="btn-action" iconProps={{ iconName: "AddTo" }} onClick={onInsert}>
                   Insert text
                 </CommandButton>
-                <CommandButton iconProps={{ iconName: "Copy" }} onClick={onCopy}>
+                <CommandButton className="btn-action" iconProps={{ iconName: "Copy" }} onClick={onCopy}>
                   Copy text
                 </CommandButton>
-              </Center>
+              </div>
             </div>
           )}
         </>
       ) : (
         <Login onSave={saveApiKey} />
       )}
-      {error && <MessageBar messageBarType={MessageBarType.error}>{error}</MessageBar>}
+      {error && (
+        <div className="error-message">
+          <MessageBar messageBarType={MessageBarType.error}>{error}</MessageBar>
+        </div>
+      )}
     </Container>
   );
 }
