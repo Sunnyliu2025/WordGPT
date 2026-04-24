@@ -1,6 +1,4 @@
 import * as React from "react";
-import { initializeIcons } from "@fluentui/font-icons-mdl2";
-initializeIcons();
 import { CommandButton, MessageBar, MessageBarType, ProgressIndicator, TextField } from "@fluentui/react";
 import { CommandBarButton } from "@fluentui/react/lib/Button";
 import axios from "axios"; // 修改为 axios
@@ -22,7 +20,6 @@ export default function App() {
       setApiKey(key);
     }
   }, []);
-
   const saveApiKey = (key: string) => {
     setApiKey(key);
     localStorage.setItem("apiKey", key);
@@ -37,9 +34,9 @@ export default function App() {
       const response = await axios.post(
         "https://api.deepseek.com/v1/chat/completions",
         {
-          model: "deepseek-chat",
+          model: "deepseek-v4-flash",
           messages: [{ role: "user", content: prompt }], // 使用messages数组
-          max_tokens: 4096,
+          max_tokens: 8192,
           temperature: 0.7,
         },
         {
@@ -98,7 +95,7 @@ export default function App() {
           ></TextField>
           <Center>
             <CommandBarButton
-              iconProps={{ iconName: "SendMail" }}
+              iconProps={{ iconName: "Send" }}
               onClick={onClick}
               styles={{
                 root: {
