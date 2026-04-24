@@ -10,3 +10,37 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/* Fluent UI 图标字体回退方案 - 确保图标能正常显示 */
+@font-face {
+  font-family: 'FabricMDL2Icons';
+  src: url('https://static2.sharepointonline.com/files/fabric/assets/icons/fabricmdl2icons-11.woff2') format('woff2'),
+       url('https://static2.sharepointonline.com/files/fabric/assets/icons/fabricmdl2icons-11.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 确保所有图标容器正确显示 */
+.ms-Icon,
+[class^="ms-Icon--"],
+[class*=" ms-Icon--"],
+i[icon-name] {
+  font-family: 'FabricMDL2Icons', 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: inline-block;
+}
+
+/* 修复按钮图标颜色继承问题 */
+.ms-Button-icon {
+  color: inherit !important;
+}
+
+/* 确保图标与文本垂直对齐 */
+.ms-Button-flexContainer {
+  align-items: center;
+  display: flex;
+}
+
+/* 使用 margin 替代 gap 以兼容 IE 等旧浏览器 */
+.ms-Button-flexContainer > * + * {
+  margin-left: 8px;
+}
