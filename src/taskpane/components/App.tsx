@@ -89,53 +89,61 @@ export default function App() {
           <TextField
             placeholder="Enter prompt here"
             value={prompt}
-            rows={8}
+            rows={12}
             multiline={true}
             onChange={(_, newValue?: string) => setPrompt(newValue || "")}
           />
           <Center>
             <CommandBarButton
-              iconProps={{ iconName: "Send" }}
+              iconProps={{ iconName: "Cloud" }}
               onClick={onClick}
               styles={{
                 root: {
-                  backgroundColor: "#0078d4",
+                  background: "linear-gradient(135deg, #0a7e3c 0%, #1aad5a 50%, #0a7e3c 100%)",
                   color: "white",
-                  margin: "12px 0",
-                  borderRadius: "6px",
-                  padding: "0 28px",
-                  minWidth: "140px",
-                  height: "40px",
+                  margin: "16px 0",
+                  borderRadius: "12px",
+                  padding: "0 40px",
+                  minWidth: "200px",
+                  height: "52px",
                   border: "none",
-                  boxShadow: "0 2px 8px rgba(0, 120, 212, 0.3)",
-                  transition: "all 0.25s ease",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow: "0 4px 16px rgba(10, 126, 60, 0.4)",
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   selectors: {
                     ":hover": {
-                      backgroundColor: "#106ebe",
-                      boxShadow: "0 4px 12px rgba(0, 120, 212, 0.4)",
+                      background: "linear-gradient(135deg, #0b8a42 0%, #1fbf62 50%, #0b8a42 100%)",
+                      boxShadow: "0 6px 24px rgba(10, 126, 60, 0.55)",
+                      transform: "translateY(-2px) scale(1.02)",
                     },
                     ":active": {
-                      backgroundColor: "#005a9e",
+                      background: "linear-gradient(135deg, #086b32 0%, #15984d 50%, #086b32 100%)",
+                      boxShadow: "0 2px 8px rgba(10, 126, 60, 0.4)",
+                      transform: "translateY(0) scale(0.98)",
                     },
                     ":disabled": {
-                      backgroundColor: "#ccc",
+                      background: "#ccc",
                       cursor: "not-allowed",
                       boxShadow: "none",
+                      transform: "none",
                     },
                   },
                 },
                 icon: {
                   color: "white",
-                  fontSize: "16px",
+                  fontSize: "18px",
+                  marginRight: "8px",
                 },
                 label: {
-                  fontWeight: 600,
-                  fontSize: "14px",
+                  fontWeight: 700,
+                  fontSize: "16px",
                   textTransform: "uppercase",
-                  letterSpacing: "0.5px",
+                  letterSpacing: "1.2px",
                 },
                 flexContainer: {
                   justifyContent: "center",
+                  alignItems: "center",
                 },
               }}
             >
