@@ -117,27 +117,44 @@ i[data-icon-name] {
 
 /* ===== Generate 按钮自定义样式 ===== */
 .btn-generate {
-  min-width: 140px;
-  padding: 12px 28px;
+  min-width: 200px;
+  padding: 14px 40px;
   border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: 0.5px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 8px rgba(0, 120, 212, 0.3);
+  background: linear-gradient(135deg, #0a7e3c 0%, #1aad5a 50%, #0a7e3c 100%);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(10, 126, 60, 0.4);
+}
+
+.btn-generate::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  pointer-events: none;
 }
 
 .btn-generate:hover {
-  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.4);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #0b8a42 0%, #1fbf62 50%, #0b8a42 100%);
+  box-shadow: 0 6px 24px rgba(10, 126, 60, 0.55);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .btn-generate:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 4px rgba(0, 120, 212, 0.3);
+  background: linear-gradient(135deg, #086b32 0%, #15984d 50%, #086b32 100%);
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(10, 126, 60, 0.4);
 }
 
 /* ===== 操作按钮（Insert / Copy） ===== */
