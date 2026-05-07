@@ -1,3 +1,4 @@
+import "./taskpane.css";
 import App from "./components/App";
 import { AppContainer } from "react-hot-loader";
 import { ThemeProvider } from "@fluentui/react";
