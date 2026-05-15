@@ -87,7 +87,7 @@ export default function App() {
       {apiKey ? (
         <>
           <TextField
-            placeholder="Enter prompt here"
+            placeholder="输入提示词"
             value={prompt}
             rows={12}
             multiline={true}
@@ -101,11 +101,11 @@ export default function App() {
                 root: {
                   background: "linear-gradient(135deg, #0a7e3c 0%, #1aad5a 50%, #0a7e3c 100%)",
                   color: "white",
-                  margin: "16px 0",
-                  borderRadius: "12px",
-                  padding: "0 40px",
-                  minWidth: "200px",
-                  height: "52px",
+                  margin: "28px 0 16px",
+                  borderRadius: "14px",
+                  padding: "0 52px",
+                  minWidth: "240px",
+                  height: "60px",
                   border: "none",
                   position: "relative",
                   overflow: "hidden",
@@ -132,12 +132,12 @@ export default function App() {
                 },
                 icon: {
                   color: "white",
-                  fontSize: "18px",
+                  fontSize: "20px",
                   marginRight: "8px",
                 },
                 label: {
                   fontWeight: 700,
-                  fontSize: "16px",
+                  fontSize: "18px",
                   textTransform: "uppercase",
                   letterSpacing: "1.2px",
                 },
@@ -147,12 +147,12 @@ export default function App() {
                 },
               }}
             >
-              Generate
+              生成
             </CommandBarButton>
           </Center>
           {loading && (
             <div className="loading-container">
-              <ProgressIndicator label="Generating text..." />
+              <ProgressIndicator label="生成中..." />
             </div>
           )}
           {generatedText && (
