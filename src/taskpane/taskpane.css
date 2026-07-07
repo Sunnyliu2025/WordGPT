@@ -12,6 +12,8 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* ===== 自定义滚动条 ===== */
@@ -22,7 +24,7 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.12);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -90,12 +92,20 @@ body {
   font-display: swap;
 }
 
-/* 确保所有图标容器正确显示 */
+/* 确保所有图标容器正确显示
+ *
+ * 注意：不能在此设置 font-family！
+ * Fluent UI 的 mergeStyles() 会为每个图标子集生成独立的 CSS class（如 FabricMDL2Icons-0），
+ * 并正确设置对应的 font-family。
+ * 但本规则的选择器 i[data-icon-name] 特异性 (0,1,1) 高于 mergeStyles 的 class (0,1,0)，
+ * 会导致 Fluent UI 的正确字体设置被覆盖，图标使用主集字体渲染而显示空白。
+ *
+ * 参考：https://github.com/microsoft/fluentui/issues/10449
+ */
 .ms-Icon,
 [class^="ms-Icon--"],
 [class*=" ms-Icon--"],
 i[data-icon-name] {
-  font-family: 'FabricMDL2Icons', 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, sans-serif;
   display: inline-block;
 }
 
@@ -113,6 +123,306 @@ i[data-icon-name] {
 /* 使用 margin 替代 gap 以兼容 IE 等旧浏览器 */
 .ms-Button-flexContainer > * + * {
   margin-left: 8px;
+}
+
+/* ===== App 包装容器 ===== */
+.app-wrapper {
+  animation: appFadeIn 0.3s ease;
+}
+
+@keyframes appFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 头部区域 ===== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 16px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 16px;
+}
+
+.app-header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.app-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.app-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* ===== 提示词输入区 ===== */
+.input-section {
+  margin-bottom: 4px;
+}
+
+.input-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.char-count {
+  font-size: 11px;
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+/* ===== 加载状态 ===== */
+.loading-container {
+  margin: 12px 0 16px;
+  padding: 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  animation: loadingFadeIn 0.3s ease;
+}
+
+@keyframes loadingFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.loading-bar {
+  width: 100%;
+  height: 4px;
+  background: #dcfce7;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.loading-bar-inner {
+  height: 100%;
+  width: 30%;
+  background: linear-gradient(90deg, #0a7e3c, #1aad5a, #0a7e3c);
+  border-radius: 2px;
+  animation: loadingSlide 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingSlide {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(200%); }
+  100% { transform: translateX(350%); }
+}
+
+.loading-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #166534;
+}
+
+.loading-icon {
+  font-size: 18px;
+}
+
+/* ===== 生成结果区域 ===== */
+.result-section {
+  margin: 12px 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.result-section.result-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.result-header-icon {
+  font-size: 16px;
+}
+
+.result-header-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.result-content {
+  padding: 16px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.result-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #1f2937;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.result-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid #f3f4f6;
+  background: #fafafa;
+}
+
+/* ===== 错误消息区域 ===== */
+.error-section {
+  margin-top: 12px;
+  animation: errorShake 0.4s ease;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+/* ===== 页脚 ===== */
+.app-footer {
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.app-footer p {
+  margin: 0;
+  font-size: 11px;
+  color: #9ca3af;
+  letter-spacing: 0.3px;
+}
+
+/* ===== 登录页面 ===== */
+.login-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 8px 16px;
+  animation: loginFadeIn 0.4s ease;
+}
+
+@keyframes loginFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-icon-container {
+  margin-bottom: 20px;
+}
+
+.login-icon-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
+  animation: loginPulse 2s ease-in-out infinite;
+}
+
+@keyframes loginPulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12); }
+  50% { box-shadow: 0 4px 24px rgba(37, 99, 235, 0.25); }
+}
+
+.login-icon-emoji {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-title {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.login-desc {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.login-input-wrapper {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.login-hint {
+  margin: 0 0 20px;
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.login-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 4px;
+  transition: color 0.2s ease;
+}
+
+.login-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
 }
 
 /* ===== Generate 按钮自定义样式 ===== */
@@ -162,44 +472,6 @@ i[data-icon-name] {
   min-width: 100px;
 }
 
-/* ===== 生成文本区域 ===== */
-.generated-text {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  padding: 14px 16px;
-  margin: 12px 0;
-  font-size: 13px;
-  line-height: 1.6;
-  color: #212529;
-  white-space: pre-wrap;
-  word-break: break-word;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-/* ===== 加载指示器容器 ===== */
-.loading-container {
-  margin: 16px 0;
-  padding: 0 4px;
-}
-
-/* ===== 错误消息 ===== */
-.error-message {
-  margin-top: 12px;
-}
-
-/* ===== 按钮间距容器 ===== */
-.button-group {
-  display: flex;
-  justify-content: center;
-  margin-top: 8px;
-}
-
-/* 使用 margin 替代 gap 以兼容 IE 等旧浏览器 */
-.button-group > * + * {
-  margin-left: 10px;
-}
 
 /* ===== 响应式适配 ===== */
 @media (max-width: 320px) {
@@ -207,8 +479,19 @@ i[data-icon-name] {
     min-width: 100%;
     padding: 10px 16px;
   }
-  .button-group {
+  .app-header {
     flex-direction: column;
-    align-items: center;
+    gap: 8px;
+  }
+  .app-header-content {
+    width: 100%;
+  }
+  .result-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  .login-wrapper {
+    padding: 24px 4px 12px;
   }
 }
