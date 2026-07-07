@@ -4,11 +4,11 @@
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>11c11698-af49-4deb-b5b1-309fed5efeca</Id>
   <Version>1.0.0.1</Version>
-  <ProviderName>deekseekAI</ProviderName>
+  <ProviderName>deepseekAI</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="WordGPT" />
   <Description
-    DefaultValue="Adding the power of deekseekAI to Word for the ultimate writing experience!" />
+    DefaultValue="Adding the power of deepseekAI to Word for the ultimate writing experience!" />
   <IconUrl DefaultValue="https://sunnyliu2025.github.io/WordGPT/assets/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://sunnyliu2025.github.io/WordGPT/assets/icon-64.png" />
   <SupportUrl DefaultValue="https://www.deepseek.com/" />

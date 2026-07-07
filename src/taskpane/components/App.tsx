@@ -5,7 +5,15 @@ import Center from "./Center";
 import Container from "./Container";
 import Login from "./Login";
 import "./initializeIcons";
-/* global Word, localStorage, navigator, setInterval, clearInterval, setTimeout */
+/* global Word, localStorage, navigator, console, setInterval, clearInterval, setTimeout */
+
+const MAX_PROMPT_LENGTH = 4000;
+const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+const DEEPSEEK_MODEL = "deepseek-v4-flash";
+
+interface ErrorResponse {
+  message?: string;
+}
 
 export default function App() {
   const [apiKey, setApiKey] = React.useState<string>("");
@@ -42,8 +50,28 @@ export default function App() {
     setError("");
   };
 
+  /** 统一处理 API 错误 */
+  const handleApiError = (error: unknown) => {
+    if (error && typeof error === "object" && "response" in error) {
+      // Axios 错误
+      const axiosErr = error as { response?: { status?: number; data?: ErrorResponse }; message?: string };
+      const status = axiosErr.response?.status;
+      const data = axiosErr.response?.data;
+      setError(`错误 ${status || "未知"}: ${data?.message || axiosErr.message || "未知错误"}`);
+      if (status === 401) {
+        setApiKey("");
+        localStorage.removeItem("apiKey");
+      }
+    } else if (error instanceof Error) {
+      setError(`错误: ${error.message}`);
+    } else {
+      setError("发生未知错误");
+    }
+  };
+
   const onClick = async () => {
-    if (!prompt.trim()) {
+    const trimmedPrompt = prompt.trim();
+    if (!trimmedPrompt) {
       setError("请输入提示词");
       return;
     }
@@ -54,10 +82,10 @@ export default function App() {
 
     try {
       const response = await axios.post(
-        "https://api.deepseek.com/v1/chat/completions",
+        DEEPSEEK_API_URL,
         {
-          model: "deepseek-v4-flash",
-          messages: [{ role: "user", content: prompt }],
+          model: DEEPSEEK_MODEL,
+          messages: [{ role: "user", content: trimmedPrompt }],
           max_tokens: 8192,
           temperature: 0.7,
         },
@@ -70,38 +98,41 @@ export default function App() {
         }
       );
 
-      setGeneratedText(response.data.choices[0].message.content);
-      setLoading(false);
+      const content = response.data?.choices?.[0]?.message?.content;
+      if (!content) {
+        throw new Error("API 返回了空响应");
+      }
+
+      setGeneratedText(content);
       // 延迟显示结果以触发动画
       setTimeout(() => setShowResult(true), 50);
-      setError("");
-    } catch (error: any) {
-      if (error.response) {
-        const status = error.response.status;
-        setError(`Error: ${status} - ${error.response.data?.message || "Unknown error"}`);
-        if (status === 401) {
-          setApiKey("");
-          localStorage.removeItem("apiKey");
-        }
-      } else if (error.request) {
-        setError("Error: No response received from server.");
-      } else {
-        setError(`Error: ${error.message}`);
-      }
+    } catch (err: unknown) {
+      handleApiError(err);
+    } finally {
       setLoading(false);
     }
   };
 
   const onInsert = async () => {
-    await Word.run(async (context) => {
-      const selection = context.document.getSelection();
-      selection.insertText(generatedText, "Start");
-      await context.sync();
-    });
+    try {
+      await Word.run(async (context) => {
+        const selection = context.document.getSelection();
+        selection.insertText(generatedText, "Start");
+        await context.sync();
+      });
+    } catch (err) {
+      setError("插入文档失败，请确保 Word 文档已打开");
+      console.error("Word insert error:", err);
+    }
   };
 
   const onCopy = async () => {
-    navigator.clipboard.writeText(generatedText);
+    try {
+      await navigator.clipboard.writeText(generatedText);
+    } catch (err) {
+      setError("复制到剪贴板失败");
+      console.error("Clipboard copy error:", err);
+    }
   };
 
   const onClear = () => {
@@ -158,15 +189,17 @@ export default function App() {
             <div className="input-section">
               <div className="input-label">
                 <span>提示词 (Prompt)</span>
-                <span className="char-count">{prompt.length} / 4000</span>
+                <span className="char-count">
+                  {prompt.length} / {MAX_PROMPT_LENGTH}
+                </span>
               </div>
               <TextField
                 placeholder="输入你的提示词，例如：帮我写一篇关于人工智能的文章..."
                 value={prompt}
-                rows={10}
+                rows={16}
                 multiline={true}
                 resizable={false}
-                maxLength={4000}
+                maxLength={MAX_PROMPT_LENGTH}
                 onChange={(_, newValue?: string) => setPrompt(newValue || "")}
                 styles={{
                   root: { width: "100%" },
