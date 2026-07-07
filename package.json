@@ -47,21 +47,21 @@
   "dependencies": {
     "@fluentui/font-icons-mdl2": "^8.5.24",
     "@fluentui/react": "^8.122.11",
+    "axios": "^1.7.2",
     "core-js": "^3.9.1",
     "es6-promise": "^4.2.8",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-icons": "^5.5.0",
     "regenerator-runtime": "^0.13.7"
   },
   "devDependencies": {
     "@babel/core": "^7.13.10",
     "@babel/preset-typescript": "^7.13.0",
+    "@hot-loader/react-dom": "^17.0.2",
     "@types/office-js": "^1.0.256",
     "@types/office-runtime": "^1.0.23",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
-    "@types/react-hot-loader": "^4.1.1",
     "@types/webpack": "^4.4.34",
     "@types/webpack-dev-server": "^4.1.0",
     "acorn": "^8.5.0",
@@ -85,6 +85,7 @@
     "office-addin-prettier-config": "^1.2.0",
     "os-browserify": "^0.3.0",
     "process": "^0.11.10",
+    "react-hot-loader": "^4.13.1",
     "rimraf": "^5.0.5",
     "semantic-release": "^21.0.1",
     "source-map-loader": "^3.0.0",
@@ -96,6 +97,7 @@
   },
   "prettier": "office-addin-prettier-config",
   "browserslist": [
-    "ie 11"
+    "ie 11",
+    "last 2 versions"
   ]
 }

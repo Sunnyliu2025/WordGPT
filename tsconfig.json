@@ -8,26 +8,29 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "noImplicitReturns": true,
+    "noUnusedLocals": true,
     "noUnusedParameters": true,
     "outDir": "dist",
-    "removeComments": false,
+    "removeComments": true,
     "sourceMap": true,
-    "target": "es5",
+    "target": "es2015",
     "lib": [
       "es7",
       "dom"
     ],
     "pretty": true,
+    "skipLibCheck": true,
     "typeRoots": [
       "node_modules/@types"
     ]
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist"
   ],
   "compileOnSave": false,
   "buildOnSave": false,
-  "ts-node": { 
-    "files": true 
+  "ts-node": {
+    "files": true
   }
 }

@@ -1,14 +1,5 @@
 import { initializeIcons } from "@fluentui/font-icons-mdl2";
 
-// 确保图标只初始化一次
-if (!window.iconsInitialized) {
-  initializeIcons();
-  window.iconsInitialized = true;
-}
-
-// 声明全局变量类型
-declare global {
-  interface Window {
-    iconsInitialized: boolean;
-  }
-} 
+// 初始化 Fluent UI 图标
+// initializeIcons() 内部已处理去重逻辑，多次调用安全
+initializeIcons();
