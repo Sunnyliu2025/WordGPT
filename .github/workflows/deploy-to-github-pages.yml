@@ -1,52 +1,39 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Workflow for deploying static content to GitHub Pages
 name: Deploy to GitHub Pages
 
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main", "master"]  # 同时支持 main 和 master 分支
+    branches: ["main", "master"]
 
   # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:              # 允许手动触发
-    inputs:
-      deploy:
-        description: 'Deploy to GitHub Pages'
-        required: false
-        default: 'true'
+  workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
-  actions: write    # 添加 actions 权限
-  deployments: write # 添加部署权限
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# Setting `cancel-in-progress: false` ensures that ongoing deployments are not interrupted,
-# allowing production deployments to complete reliably even if new commits are pushed.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
   build-and-deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    permissions: write-all  # 添加任务级别的权限
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: '20.x'
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
@@ -54,34 +41,34 @@ jobs:
         run: npm ci
         env:
           CI: true
-          PUBLIC_URL: /${{ github.event.repository.name }}
           NODE_OPTIONS: --max_old_space_size=4096
-        continue-on-error: false
 
       - name: Build
         run: npm run build
 
-      - name: Verify build
+      - name: Verify build output
         run: |
-          if [ ! -d "dist" ]; then
-            echo "Build directory not found!"
+          if [ ! -f "dist/index.html" ]; then
+            echo "Build output not found: dist/index.html is missing!"
             exit 1
           fi
+          echo "Build verified successfully. Contents:"
+          ls -lh dist/
 
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
 
       - name: Check deployment status
         if: steps.deployment.outcome == 'failure'
         run: |
-          echo "Deployment failed"
+          echo "::error::Deployment to GitHub Pages failed"
           exit 1
