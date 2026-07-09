@@ -1,4 +1,5 @@
 {
   "plugins": ["office-addins"],
-  "extends": ["plugin:office-addins/react"]
+  "extends": ["plugin:office-addins/react"],
+  "ignorePatterns": ["commands.js", "taskpane.js", "vendor.js", "polyfill.js", "*.map"]
 }
