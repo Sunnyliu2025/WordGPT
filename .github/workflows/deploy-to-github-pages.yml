@@ -1,21 +1,23 @@
-# Workflow for deploying static content to GitHub Pages
+# =============================================================================
+# Workflow: Deploy to GitHub Pages
+# Description: Builds static assets and deploys them to GitHub Pages
+# =============================================================================
 name: Deploy to GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["main", "gh-pages"]
 
-  # Allows you to run this workflow manually from the Actions tab
+  # 允许从 Actions 标签页手动触发
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# GITHUB_TOKEN 权限配置
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# 并发控制：同一时间只允许一个部署运行
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -26,49 +28,109 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
+      # -----------------------------------------------------------------------
+      # Step 1: Checkout repository
+      # -----------------------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
+      # -----------------------------------------------------------------------
+      # Step 2: Setup Node.js environment with caching
+      # -----------------------------------------------------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           node-version: '20.x'
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
+          # 可选：设置 npm 镜像源以提高国内访问速度
+          # registry-url: 'https://registry.npmmirror.com'
 
+      # -----------------------------------------------------------------------
+      # Step 3: Install dependencies（确定性安装）
+      # -----------------------------------------------------------------------
       - name: Install Dependencies
+        id: install
         run: npm ci
         env:
+          # CI 模式下跳过非必要的 dev 告警
           CI: true
-          NODE_OPTIONS: --max_old_space_size=4096
+          # 增大 Node.js 内存限制，防止大型依赖构建时 OOM
+          NODE_OPTIONS: "--max_old_space_size=4096"
+        # 首次失败后不立即终止，允许重试步骤
+        continue-on-error: true
 
+      # 如果首次安装失败，清空缓存后重试（缓解网络波动）
+      - name: Retry Install Dependencies (on failure)
+        if: steps.install.outcome == 'failure'
+        run: |
+          echo "::warning::npm ci failed, clearing cache and retrying..."
+          npm cache clean --force
+          npm ci
+        env:
+          CI: true
+          NODE_OPTIONS: "--max_old_space_size=4096"
+
+      # -----------------------------------------------------------------------
+      # Step 4: Build project
+      # -----------------------------------------------------------------------
       - name: Build
         run: npm run build
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+          # 生产环境构建标志
+          NODE_ENV: production
 
-      - name: Verify build output
+      # -----------------------------------------------------------------------
+      # Step 5: Verify build output exists
+      # -----------------------------------------------------------------------
+      - name: Verify Build Output
         run: |
-          if [ ! -f "dist/index.html" ]; then
-            echo "Build output not found: dist/index.html is missing!"
+          readonly OUTPUT_DIR="dist"
+          readonly ENTRY_FILE="${OUTPUT_DIR}/index.html"
+
+          if [ ! -f "${ENTRY_FILE}" ]; then
+            echo "::error::Build output missing: ${ENTRY_FILE} does not exist!"
+            echo "::error::Expected entry point not found after build step."
             exit 1
           fi
-          echo "Build verified successfully. Contents:"
-          ls -lh dist/
 
+          echo "✅ Build verified successfully. Output contents:"
+          ls -lh "${OUTPUT_DIR}/"
+
+      # -----------------------------------------------------------------------
+      # Step 6: Configure GitHub Pages
+      # -----------------------------------------------------------------------
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload artifact
+      # -----------------------------------------------------------------------
+      # Step 7: Upload build artifact for deployment
+      # -----------------------------------------------------------------------
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
+      # -----------------------------------------------------------------------
+      # Step 8: Deploy to GitHub Pages
+      # -----------------------------------------------------------------------
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Check deployment status
+      # -----------------------------------------------------------------------
+      # Step 9: Verify deployment success
+      # -----------------------------------------------------------------------
+      - name: Verify Deployment
         if: steps.deployment.outcome == 'failure'
         run: |
-          echo "::error::Deployment to GitHub Pages failed"
+          echo "::error::Deployment to GitHub Pages failed!"
+          echo "::error::Check the deployment step logs for details."
           exit 1
+        # 可扩展：部署失败时发送通知（Slack/邮件等）
+        # continue-on-error: true
