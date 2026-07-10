@@ -194,9 +194,9 @@ export default function App() {
                 </span>
               </div>
               <TextField
-                placeholder="输入你的提示词，例如：帮我写一篇关于人工智能的文章..."
+                placeholder="请输入..."
                 value={prompt}
-                rows={16}
+                rows={20}
                 multiline={true}
                 resizable={false}
                 maxLength={MAX_PROMPT_LENGTH}
@@ -236,34 +236,34 @@ export default function App() {
             {/* ===== 生成按钮 ===== */}
             <Center>
               <DefaultButton
-                iconProps={{ iconName: "Cloud" }}
+                iconProps={{ iconName: "Play" }}
                 onClick={onClick}
                 disabled={loading || !prompt.trim()}
                 styles={{
                   root: {
-                    background: "linear-gradient(135deg, #0a7e3c 0%, #1aad5a 50%, #0a7e3c 100%)",
+                    background: "linear-gradient(135deg, #007aff 0%, #0a84ff 50%, #0060df 100%)",
                     color: "white",
-                    margin: "24px 0 20px",
-                    borderRadius: 14,
-                    padding: "0 48px",
-                    minWidth: 220,
-                    height: 52,
+                    margin: "20px 0 16px",
+                    borderRadius: 22,
+                    padding: "0 28px",
+                    minWidth: 140,
+                    height: 40,
                     border: "none",
                     position: "relative",
                     overflow: "hidden",
-                    boxShadow: "0 4px 16px rgba(10, 126, 60, 0.35)",
-                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    boxShadow: "0 4px 14px rgba(0, 122, 255, 0.35)",
+                    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
                     cursor: loading || !prompt.trim() ? "not-allowed" : "pointer",
                     opacity: loading || !prompt.trim() ? 0.6 : 1,
                     selectors: {
                       ":hover": {
-                        background: "linear-gradient(135deg, #0b8a42 0%, #1fbf62 50%, #0b8a42 100%)",
-                        boxShadow: "0 6px 24px rgba(10, 126, 60, 0.5)",
-                        transform: loading || !prompt.trim() ? "none" : "translateY(-2px) scale(1.02)",
+                        background: "linear-gradient(135deg, #0066d9 0%, #007aff 50%, #0055b3 100%)",
+                        boxShadow: "0 6px 20px rgba(0, 122, 255, 0.45)",
+                        transform: loading || !prompt.trim() ? "none" : "translateY(-1px) scale(1.02)",
                       },
                       ":active": {
-                        background: "linear-gradient(135deg, #086b32 0%, #15984d 50%, #086b32 100%)",
-                        boxShadow: "0 2px 8px rgba(10, 126, 60, 0.4)",
+                        background: "linear-gradient(135deg, #0055b3 0%, #0060df 50%, #004499 100%)",
+                        boxShadow: "0 2px 6px rgba(0, 122, 255, 0.3)",
                         transform: loading || !prompt.trim() ? "none" : "translateY(0) scale(0.98)",
                       },
                       "::after": {
@@ -274,20 +274,20 @@ export default function App() {
                         right: 0,
                         bottom: 0,
                         background:
-                          "linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%)",
+                          "linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)",
                         pointerEvents: "none",
                       },
                     },
                   },
                   icon: {
                     color: "white",
-                    fontSize: 18,
-                    marginRight: 8,
+                    fontSize: 14,
+                    marginRight: 6,
                   },
                   label: {
-                    fontWeight: 700,
-                    fontSize: 16,
-                    letterSpacing: "1px",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    letterSpacing: "0.5px",
                   },
                   flexContainer: {
                     justifyContent: "center",
@@ -295,7 +295,7 @@ export default function App() {
                   },
                 }}
               >
-                {loading ? "生成中..." : "✨ 生成"}
+                {loading ? "生成中..." : "生成"}
               </DefaultButton>
             </Center>
 
@@ -335,10 +335,10 @@ export default function App() {
                         transition: "all 0.2s ease",
                       },
                       rootHovered: {
-                        background: "rgba(10, 126, 60, 0.08)",
+                        background: "rgba(0, 122, 255, 0.08)",
                       },
-                      icon: { color: "#0a7e3c", fontSize: 14 },
-                      label: { fontWeight: 600, fontSize: 13, color: "#0a7e3c" },
+                      icon: { color: "#007aff", fontSize: 14 },
+                      label: { fontWeight: 600, fontSize: 13, color: "#007aff" },
                     }}
                   >
                     插入文档
@@ -355,10 +355,10 @@ export default function App() {
                         transition: "all 0.2s ease",
                       },
                       rootHovered: {
-                        background: "rgba(59, 130, 246, 0.08)",
+                        background: "rgba(0, 122, 255, 0.08)",
                       },
-                      icon: { color: "#3b82f6", fontSize: 14 },
-                      label: { fontWeight: 600, fontSize: 13, color: "#3b82f6" },
+                      icon: { color: "#007aff", fontSize: 14 },
+                      label: { fontWeight: 600, fontSize: 13, color: "#007aff" },
                     }}
                   >
                     复制文本

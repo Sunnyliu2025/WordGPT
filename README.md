@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/Sunnyliu2025/WordGPT">
-    <img src="assets/deekseeklogo.png" alt="Logo" height="100">
+    <img src="assets/deepseeklogo.png" alt="Logo" height="100">
   </a>
 
   <br />

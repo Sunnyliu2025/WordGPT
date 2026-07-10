@@ -8,10 +8,10 @@ export default function Container({ children }: ContainerProps) {
   return (
     <div
       style={{
-        padding: "20px",
+        padding: "24px",
         minHeight: "100%",
         boxSizing: "border-box",
-        background: "#fff",
+        background: "#ffffff",
         borderRadius: "0",
         boxShadow: "none",
       }}
