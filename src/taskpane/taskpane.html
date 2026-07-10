@@ -2,15 +2,20 @@
 <!-- See LICENSE in the project root for license information -->
 
 <!DOCTYPE html>
-<html lang="en" data-framework="typescript">
+<html lang="zh-CN" data-framework="typescript">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>WordGPT</title>
 
-    <!-- Office JavaScript API -->
-    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+    <!-- 预连接 CDN 资源，减少 DNS/TLS 握手延迟 -->
+    <link rel="preconnect" href="https://appsforoffice.microsoft.com" crossorigin />
+    <link rel="preconnect" href="https://static2.sharepointonline.com" crossorigin />
+    <link rel="preconnect" href="https://res.cdn.office.net" crossorigin />
+
+    <!-- Office JavaScript API - 使用 async 避免阻塞渲染 -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js" async></script>
 
     <!-- For more information on Fluent UI, visit https://developer.microsoft.com/fluentui#/. -->
     <link

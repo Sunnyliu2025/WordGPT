@@ -4,7 +4,6 @@ import axios from "axios";
 import Center from "./Center";
 import Container from "./Container";
 import Login from "./Login";
-import "./initializeIcons";
 /* global Word, localStorage, navigator, console, setInterval, clearInterval, setTimeout */
 
 const MAX_PROMPT_LENGTH = 4000;
@@ -25,6 +24,14 @@ export default function App() {
   // 动画状态
   const [showResult, setShowResult] = React.useState<boolean>(false);
   const [dots, setDots] = React.useState<string>("");
+
+  // 延迟初始化 Fluent UI 图标，避免阻塞首次渲染
+  // initializeIcons() 内部已处理去重逻辑，多次调用安全
+  React.useEffect(() => {
+    setTimeout(() => {
+      import("./initializeIcons");
+    }, 0);
+  }, []);
 
   React.useEffect(() => {
     const key = localStorage.getItem("apiKey");
@@ -152,6 +159,9 @@ export default function App() {
               src="assets/deepseeklogo.png"
               alt="DeepSeek"
               className="app-logo"
+              width={36}
+              height={36}
+              decoding="async"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
               }}
