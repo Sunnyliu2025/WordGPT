@@ -24,7 +24,7 @@
   "scripts": {
     "build": "webpack --mode production && cp index.html dist/index.html",
     "build:dev": "webpack --mode development",
-    "build:prod": "webpack --mode production --optimize-minimize",
+    "build:prod": "webpack --mode production",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "predeploy": "npm run build:prod",
