@@ -6,7 +6,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 /* global Office, module, require, process */
 
-const render = (Component) => {
+const render = (Component: React.ComponentType) => {
   ReactDOM.render(
     <AppContainer>
       <ThemeProvider>

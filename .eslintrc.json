@@ -1,5 +1,13 @@
 {
   "plugins": ["office-addins"],
   "extends": ["plugin:office-addins/react"],
-  "ignorePatterns": ["commands.js", "taskpane.js", "vendor.js", "polyfill.js", "*.map"]
+  "ignorePatterns": ["commands.js", "taskpane.js", "vendor.js", "polyfill.js", "*.map", "webpack.config.js"],
+  "overrides": [
+    {
+      "files": ["webpack.config.js"],
+      "env": {
+        "node": true
+      }
+    }
+  ]
 }
