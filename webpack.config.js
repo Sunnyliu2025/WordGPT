@@ -31,10 +31,10 @@ module.exports = (env, argv) => {
       },
     },
     output: {
-      path: path.resolve(__dirname, "."),
+      path: path.resolve(__dirname, "dist"),
       publicPath: url,
       filename: "[name].js",
-      clean: false,
+      clean: true,
     },
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
