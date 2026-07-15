@@ -1,114 +1,113 @@
-const devCerts = require("office-addin-dev-certs");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const webpack = require("webpack");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const urlDev = "https://localhost:3000/";
-const urlProd = "https://github.com/Sunnyliu2025/WordGPT/blob/main//"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const isProd = process.env.NODE_ENV === "production";
 
-async function getHttpsOptions() {
-  const httpsOptions = await devCerts.getHttpsServerOptions();
-  return { ca: httpsOptions.ca, key: httpsOptions.key, cert: httpsOptions.cert };
-}
+module.exports = {
+  mode: isProd ? "production" : "development",
+  devtool: isProd ? "source-map" : "inline-source-map",
 
-module.exports = async (env, options) => {
-  const dev = options.mode === "development";
-  const config = {
-    devtool: "source-map",
-    entry: {
-      polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
-      vendor: ["react", "react-dom", "core-js", "@fluentui/react"],
-      taskpane: ["react-hot-loader/patch", "./src/taskpane/index.tsx", "./src/taskpane/taskpane.html"],
-      commands: "./src/commands/commands.ts",
-    },
-    output: {
-      clean: true,
-    },
-    resolve: {
-      extensions: [".ts", ".tsx", ".html", ".js"],
-    },
-    module: {
-      rules: [
+  entry: {
+    polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
+    vendor: ["react", "react-dom", "@fluentui/react", "axios"],
+    taskpane: path.resolve(__dirname, "src/taskpane/index.tsx"),
+    commands: path.resolve(__dirname, "src/commands/commands.ts"),
+  },
+
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "[name].js",
+    clean: true,
+  },
+
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: ["babel-loader", "ts-loader"],
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
+      {
+        test: /\.less$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"],
+      },
+      {
+        test: /\.html$/,
+        use: ["html-loader"],
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|ico|svg)$/,
+        type: "asset/resource",
+        generator: {
+          filename: "assets/[name][ext][query]",
+        },
+      },
+    ],
+  },
+
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: "[name].[contenthash].css",
+    }),
+    new HtmlWebpackPlugin({
+      filename: "taskpane.html",
+      template: path.resolve(__dirname, "src/taskpane/taskpane.html"),
+      chunks: ["polyfill", "vendor", "taskpane"],
+    }),
+    new HtmlWebpackPlugin({
+      filename: "commands.html",
+      template: path.resolve(__dirname, "src/commands/commands.html"),
+      chunks: ["polyfill", "vendor", "commands"],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
         {
-          test: /\.ts$/,
-          exclude: /node_modules/,
-          use: {
-            loader: "babel-loader",
-            options: {
-              presets: ["@babel/preset-typescript"],
-            },
-          },
+          from: "assets",
+          to: "assets",
+          noErrorOnMissing: true,
         },
         {
-          test: /\.tsx?$/,
-          exclude: /node_modules/,
-          use: ["react-hot-loader/webpack", "ts-loader"],
-        },
-        {
-          test: /\.html$/,
-          exclude: /node_modules/,
-          use: "html-loader",
-        },
-        {
-          test: /\.(png|jpg|jpeg|gif|ico)$/,
-          type: "asset/resource",
-          generator: {
-            filename: "assets/[name][ext][query]",
-          },
-        },
-        {
-          test: /\.css$/,
-          exclude: /node_modules/,
-          use: ["style-loader", "css-loader"],
+          from: "index.html",
+          to: "index.html",
+          noErrorOnMissing: true,
         },
       ],
-    },
-    plugins: [
-      new CopyWebpackPlugin({
-        patterns: [
-          {
-            from: "assets/*",
-            to: "assets/[name][ext][query]",
-          },
-          {
-            from: "manifest*.xml",
-            to: "[name]" + "[ext]",
-            transform(content) {
-              if (dev) {
-                return content;
-              } else {
-                return content.toString().replace(new RegExp(urlDev, "g"), urlProd);
-              }
-            },
-          },
-        ],
-      }),
-      new HtmlWebpackPlugin({
-        filename: "taskpane.html",
-        template: "./src/taskpane/taskpane.html",
-        chunks: ["taskpane", "vendor", "polyfills"],
-      }),
-      new HtmlWebpackPlugin({
-        filename: "commands.html",
-        template: "./src/commands/commands.html",
-        chunks: ["commands"],
-      }),
-      new webpack.ProvidePlugin({
-        Promise: ["es6-promise", "Promise"],
-      }),
-    ],
-    devServer: {
-      hot: true,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
-      server: {
-        type: "https",
-        options: env.WEBPACK_BUILD || options.https !== undefined ? options.https : await getHttpsOptions(),
-      },
-      port: process.env.npm_package_config_dev_server_port || 3000,
-    },
-  };
+    }),
+  ],
 
-  return config;
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendor",
+          chunks: "all",
+          priority: 10,
+        },
+      },
+    },
+  },
+
+  devServer: {
+    static: {
+      directory: path.resolve(__dirname, "dist"),
+    },
+    hot: true,
+    port: 3000,
+    devMiddleware: {
+      writeToDisk: true,
+    },
+  },
 };

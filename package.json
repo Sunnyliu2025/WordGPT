@@ -1,39 +1,19 @@
 {
   "name": "wordgpt",
   "version": "0.0.1",
-  "release": {
-    "branches": [
-      "main"
-    ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/github"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Sunnyliu2025/WordGPT"
-  },
-  "license": "MIT",
-  "config": {
-    "app_to_debug": "word",
-    "app_type_to_debug": "desktop",
-    "dev_server_port": 3000
-  },
+  "description": "Adding the power of deepseekAI to Word for the ultimate writing experience!",
+  "main": "dist/taskpane.js",
   "scripts": {
-    "build": "webpack --mode production && cp index.html dist/index.html",
+    "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
     "dev-server": "webpack serve --mode development",
     "lint": "office-addin-lint check",
     "lint:fix": "office-addin-lint fix",
     "prettier": "office-addin-lint prettier",
     "start": "office-addin-debugging start manifest.xml",
-    "start:desktop": "office-addin-debugging start manifest.xml desktop",
-    "start:web": "office-addin-debugging start manifest.xml web",
     "stop": "office-addin-debugging stop manifest.xml",
     "validate": "office-addin-manifest validate manifest.xml",
-    "watch": "webpack --mode development --watch"
+    "watch": "webpack --watch --mode development"
   },
   "dependencies": {
     "@fluentui/react": "^8.52.3",
@@ -83,8 +63,15 @@
     "webpack-cli": "^4.8.0",
     "webpack-dev-server": "4.7.4"
   },
-  "prettier": "office-addin-prettier-config",
-  "browserslist": [
-    "ie 11"
-  ]
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sunnyliu2025/WordGPT.git"
+  },
+  "keywords": ["office-addin", "word", "deepseek", "AI"],
+  "author": "deepseekAI",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sunnyliu2025/WordGPT/issues"
+  },
+  "homepage": "https://github.com/Sunnyliu2025/WordGPT"
 }
