@@ -3,111 +3,109 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const isProd = process.env.NODE_ENV === "production";
+const urlDev = "https://localhost:3000/";
+const urlProd = "https://sunnyliu2025.github.io/WordGPT/";
 
-module.exports = {
-  mode: isProd ? "production" : "development",
-  devtool: isProd ? "source-map" : "inline-source-map",
+module.exports = (env, argv) => {
+  const isDev = argv.mode === "development";
+  const url = isDev ? urlDev : urlProd;
 
-  entry: {
-    polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
-    vendor: ["react", "react-dom", "@fluentui/react", "axios"],
-    taskpane: path.resolve(__dirname, "src/taskpane/index.tsx"),
-    commands: path.resolve(__dirname, "src/commands/commands.ts"),
-  },
-
-  output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "[name].js",
-    clean: true,
-  },
-
-  resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx"],
-  },
-
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: ["babel-loader", "ts-loader"],
-        exclude: /node_modules/,
+  return {
+    target: "web",
+    devtool: "source-map",
+    entry: {
+      polyfill: {
+        import: ["core-js/stable", "regenerator-runtime/runtime"],
       },
-      {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      vendor: {
+        import: ["react", "react-dom", "@fluentui/react", "axios"],
+        dependOn: "polyfill",
       },
-      {
-        test: /\.less$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"],
+      taskpane: {
+        import: "./src/taskpane/index.tsx",
+        dependOn: "vendor",
       },
-      {
-        test: /\.html$/,
-        use: ["html-loader"],
-        exclude: /node_modules/,
+      commands: {
+        import: "./src/commands/commands.ts",
+        dependOn: "vendor",
       },
-      {
-        test: /\.(png|jpg|jpeg|gif|ico|svg)$/,
-        type: "asset/resource",
-        generator: {
-          filename: "assets/[name][ext][query]",
-        },
+    },
+    output: {
+      path: path.resolve(__dirname, "."),
+      publicPath: url,
+      filename: "[name].js",
+      clean: false,
+    },
+    resolve: {
+      extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
+      fallback: {
+        os: require.resolve("os-browserify/browser"),
+        process: require.resolve("process/browser"),
       },
-    ],
-  },
-
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: "[name].[contenthash].css",
-    }),
-    new HtmlWebpackPlugin({
-      filename: "taskpane.html",
-      template: path.resolve(__dirname, "src/taskpane/taskpane.html"),
-      chunks: ["polyfill", "vendor", "taskpane"],
-    }),
-    new HtmlWebpackPlugin({
-      filename: "commands.html",
-      template: path.resolve(__dirname, "src/commands/commands.html"),
-      chunks: ["polyfill", "vendor", "commands"],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
+    },
+    module: {
+      rules: [
         {
-          from: "assets",
-          to: "assets",
-          noErrorOnMissing: true,
+          test: /\.tsx?$/,
+          use: {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true,
+            },
+          },
+          exclude: /node_modules/,
         },
         {
-          from: "index.html",
-          to: "index.html",
-          noErrorOnMissing: true,
+          test: /\.css$/,
+          use: [MiniCssExtractPlugin.loader, "css-loader"],
+        },
+        {
+          test: /\.less$/,
+          use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"],
+        },
+        {
+          test: /\.(png|jpg|jpeg|gif|ico|svg)$/,
+          type: "asset/resource",
+        },
+        {
+          test: /\.html$/,
+          exclude: /node_modules/,
+          use: "html-loader",
         },
       ],
-    }),
-  ],
-
-  optimization: {
-    splitChunks: {
-      chunks: "all",
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: "vendor",
-          chunks: "all",
-          priority: 10,
-        },
-      },
     },
-  },
-
-  devServer: {
-    static: {
-      directory: path.resolve(__dirname, "dist"),
+    plugins: [
+      new MiniCssExtractPlugin({
+        filename: "[name].[contenthash].css",
+      }),
+      new HtmlWebpackPlugin({
+        filename: "taskpane.html",
+        template: "./src/taskpane/taskpane.html",
+        chunks: ["polyfill", "vendor", "taskpane"],
+        scriptLoading: "defer",
+      }),
+      new HtmlWebpackPlugin({
+        filename: "commands.html",
+        template: "./src/commands/commands.html",
+        chunks: ["commands"],
+        scriptLoading: "defer",
+      }),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: "assets",
+            to: "assets",
+          },
+          {
+            from: "index.html",
+            to: "index.html",
+            noErrorOnMissing: true,
+          },
+        ],
+      }),
+    ],
+    performance: {
+      hints: false,
     },
-    hot: true,
-    port: 3000,
-    devMiddleware: {
-      writeToDisk: true,
-    },
-  },
+  };
 };
