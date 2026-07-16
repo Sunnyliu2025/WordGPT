@@ -207,7 +207,7 @@ export default function App() {
                 </span>
               </div>
               <textarea
-                placeholder="输入你的提示词，例如：帮我写一篇关于人工智能的文章..."
+                placeholder="输入你的提示词..."
                 value={prompt}
                 maxLength={MAX_PROMPT_LENGTH}
                 onChange={(e) => setPrompt(e.target.value)}
@@ -216,9 +216,9 @@ export default function App() {
                   width: "100%",
                   minWidth: "100%",
                   maxWidth: "100%",
-                  minHeight: "280px",
+                  minHeight: "160px",
                   maxHeight: "500px",
-                  height: "320px",
+                  height: "160px",
                   boxSizing: "border-box",
                   padding: "16px 18px",
                   fontSize: "15px",
