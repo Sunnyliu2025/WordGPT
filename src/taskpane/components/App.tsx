@@ -217,7 +217,7 @@ export default function App() {
                   minWidth: "100%",
                   maxWidth: "100%",
                   minHeight: "160px",
-                  maxHeight: "500px",
+                  maxHeight: "400px",
                   height: "160px",
                   boxSizing: "border-box",
                   padding: "16px 18px",
