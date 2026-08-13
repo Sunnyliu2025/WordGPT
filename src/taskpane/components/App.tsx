@@ -16,9 +16,20 @@ import "./initializeIcons";
 const MAX_PROMPT_LENGTH = 4000;
 const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
 const DEEPSEEK_MODEL = "deepseek-v4-flash";
+// 上传文件大小上限：10MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+// 附加文件内容的最大字符数（避免超出模型上下文限制）
+const MAX_FILE_CONTENT_CHARS = 20000;
 
 interface ErrorResponse {
   message?: string;
+}
+
+interface AttachedFile {
+  name: string;
+  size: number;
+  content: string;
+  truncated: boolean;
 }
 
 export default function App() {
@@ -27,6 +38,12 @@ export default function App() {
   const [error, setError] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(false);
   const [generatedText, setGeneratedText] = React.useState<string>("");
+
+  // 上传的附件文件
+  const [attachedFile, setAttachedFile] = React.useState<AttachedFile | null>(
+    null
+  );
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // 动画状态
   const [showResult, setShowResult] = React.useState<boolean>(false);
@@ -82,10 +99,96 @@ export default function App() {
     }
   };
 
+  /** 读取文件为文本（兼容旧版 WebView） */
+  const readFileAsText = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(file, "utf-8");
+    });
+
+  /** 读取文件为 ArrayBuffer（兼容旧版 WebView） */
+  const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as ArrayBuffer);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(file);
+    });
+
+  /** 处理上传的文件，解析为纯文本内容 */
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    // 重置 input 值，允许重复选择同一个文件
+    event.target.value = "";
+    if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE) {
+      setError("文件大小不能超过 10MB");
+      return;
+    }
+
+    const lowerName = file.name.toLowerCase();
+    try {
+      let content = "";
+      if (lowerName.endsWith(".docx")) {
+        // 使用 mammoth 解析 Word 文档
+        const mammoth = await import("mammoth");
+        const arrayBuffer = await readFileAsArrayBuffer(file);
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        content = result.value;
+      } else if (lowerName.endsWith(".doc")) {
+        setError("暂不支持旧版 .doc 格式，请转换为 .docx 后重试");
+        return;
+      } else if (lowerName.endsWith(".pdf")) {
+        setError("暂不支持 PDF 文件，请转换为文本或 .docx 后重试");
+        return;
+      } else {
+        // 其他文件按纯文本读取
+        content = await readFileAsText(file);
+      }
+
+      const truncated = content.length > MAX_FILE_CONTENT_CHARS;
+      const finalContent = truncated
+        ? content.slice(0, MAX_FILE_CONTENT_CHARS)
+        : content;
+
+      setAttachedFile({
+        name: file.name,
+        size: file.size,
+        content: finalContent,
+        truncated,
+      });
+      setError("");
+    } catch (err) {
+      setError("文件读取失败，请重试");
+      console.error("File read error:", err);
+    }
+  };
+
+  /** 移除已上传的文件 */
+  const onRemoveFile = () => {
+    setAttachedFile(null);
+  };
+
+  /** 构建最终提交给 API 的提示词内容（提示词 + 附件内容） */
+  const buildPromptContent = () => {
+    const trimmed = prompt.trim();
+    if (attachedFile && attachedFile.content) {
+      const fileBlock = `\n\n===== 附件文件内容（${attachedFile.name}）=====\n${attachedFile.content}`;
+      return `${trimmed}${fileBlock}`;
+    }
+    return trimmed;
+  };
+
   const onClick = async () => {
     const trimmedPrompt = prompt.trim();
-    if (!trimmedPrompt) {
-      setError("请输入提示词");
+    const hasFileContent = !!attachedFile?.content;
+    if (!trimmedPrompt && !hasFileContent) {
+      setError("请输入提示词或上传文件");
       return;
     }
     setGeneratedText("");
@@ -98,7 +201,7 @@ export default function App() {
         DEEPSEEK_API_URL,
         {
           model: DEEPSEEK_MODEL,
-          messages: [{ role: "user", content: trimmedPrompt }],
+          messages: [{ role: "user", content: buildPromptContent() }],
           max_tokens: 8192,
           temperature: 0.7,
         },
@@ -150,10 +253,14 @@ export default function App() {
 
   const onClear = () => {
     setPrompt("");
+    setAttachedFile(null);
     setGeneratedText("");
     setShowResult(false);
     setError("");
   };
+
+  // 是否有有效内容（提示词或附件），用于控制生成按钮状态
+  const promptReady = !!prompt.trim() || !!attachedFile?.content;
 
   return (
     <Container>
@@ -238,6 +345,86 @@ export default function App() {
                   overflowWrap: "break-word",
                 }}
               />
+
+              {/* ===== 文件上传区 ===== */}
+              <div className="file-upload-section">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".txt,.md,.csv,.json,.js,.jsx,.ts,.tsx,.py,.docx,.doc,text/plain"
+                  style={{ display: "none" }}
+                  onChange={handleFileSelect}
+                />
+                {attachedFile ? (
+                  <div className="file-chip">
+                    <span className="file-chip-icon">📄</span>
+                    <div className="file-chip-info">
+                      <span className="file-chip-name">
+                        {attachedFile.name}
+                      </span>
+                      <span className="file-chip-meta">
+                        {attachedFile.size >= 1024
+                          ? `${(attachedFile.size / 1024).toFixed(1)} KB`
+                          : `${attachedFile.size} B`}
+                        {attachedFile.truncated ? " · 内容已截断" : ""}
+                      </span>
+                    </div>
+                    <IconButton
+                      iconProps={{ iconName: "Cancel" }}
+                      title="移除文件"
+                      ariaLabel="移除文件"
+                      onClick={onRemoveFile}
+                      styles={{
+                        root: {
+                          color: "#9ca3af",
+                          width: 28,
+                          height: 28,
+                          borderRadius: 6,
+                          transition: "all 0.2s ease",
+                        },
+                        rootHovered: {
+                          color: "#dc2626",
+                          background: "rgba(220, 38, 38, 0.08)",
+                        },
+                        icon: { fontSize: 12, fontWeight: 700 },
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <DefaultButton
+                    className="file-upload-btn"
+                    onClick={() => fileInputRef.current?.click()}
+                    styles={{
+                      root: {
+                        width: "100%",
+                        height: 40,
+                        borderRadius: 10,
+                        border: "1.5px dashed #cbd5e1",
+                        background: "#f8fafc",
+                        color: "#64748b",
+                        transition: "all 0.2s ease",
+                      },
+                      rootHovered: {
+                        background: "#f0f5ff",
+                        borderColor: "#3b82f6",
+                        color: "#3b82f6",
+                      },
+                      flexContainer: {
+                        justifyContent: "center",
+                        alignItems: "center",
+                      },
+                      label: { fontWeight: 500, fontSize: 13 },
+                    }}
+                  >
+                    <span className="file-upload-btn-content">
+                      <span className="file-upload-btn-icon" aria-hidden="true">
+                        📎
+                      </span>
+                      <span>上传文件（.txt / .docx / .md 等）</span>
+                    </span>
+                  </DefaultButton>
+                )}
+              </div>
             </div>
 
             {/* ===== 生成按钮 ===== */}
@@ -245,7 +432,7 @@ export default function App() {
               <DefaultButton
                 iconProps={{ iconName: "Play" }}
                 onClick={onClick}
-                disabled={loading || !prompt.trim()}
+                disabled={loading || !promptReady}
                 styles={{
                   root: {
                     background:
@@ -261,16 +448,15 @@ export default function App() {
                     overflow: "hidden",
                     boxShadow: "0 4px 14px rgba(0, 122, 255, 0.35)",
                     transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                    cursor:
-                      loading || !prompt.trim() ? "not-allowed" : "pointer",
-                    opacity: loading || !prompt.trim() ? 0.6 : 1,
+                    cursor: loading || !promptReady ? "not-allowed" : "pointer",
+                    opacity: loading || !promptReady ? 0.6 : 1,
                     selectors: {
                       ":hover": {
                         background:
                           "linear-gradient(135deg, #0066d9 0%, #007aff 50%, #0055b3 100%)",
                         boxShadow: "0 6px 20px rgba(0, 122, 255, 0.45)",
                         transform:
-                          loading || !prompt.trim()
+                          loading || !promptReady
                             ? "none"
                             : "translateY(-1px) scale(1.02)",
                       },
@@ -279,7 +465,7 @@ export default function App() {
                           "linear-gradient(135deg, #0055b3 0%, #0060df 50%, #004499 100%)",
                         boxShadow: "0 2px 6px rgba(0, 122, 255, 0.3)",
                         transform:
-                          loading || !prompt.trim()
+                          loading || !promptReady
                             ? "none"
                             : "translateY(0) scale(0.98)",
                       },

@@ -2,17 +2,37 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const devCerts = require("office-addin-dev-certs");
 
 const urlDev = "https://localhost:3000/";
 const urlProd = "https://sunnyliu2025.github.io/WordGPT/";
 
-module.exports = (env, argv) => {
+module.exports = async (env, argv) => {
   const isDev = argv.mode === "development";
   const url = isDev ? urlDev : urlProd;
+
+  // 开发模式下，让 dev-server 的端口与 HTTPS 和 publicPath(https://localhost:3000/) 保持一致，
+  // 避免页面引用的 JS/CSS 指向 3000 而 dev-server 却运行在默认端口 8080 导致资源加载失败。
+  let devServerConfig = {};
+  if (isDev) {
+    try {
+      devServerConfig = {
+        https: await devCerts.getHttpsServerOptions(),
+        port: 3000,
+        host: "localhost",
+      };
+    } catch (err) {
+      console.warn(
+        "无法加载 office-addin-dev-certs 证书，dev-server 将退回默认配置。",
+        err
+      );
+    }
+  }
 
   return {
     target: "web",
     devtool: "source-map",
+    devServer: devServerConfig,
     entry: {
       polyfill: {
         import: ["core-js/stable", "regenerator-runtime/runtime"],

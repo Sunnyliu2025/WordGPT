@@ -20,6 +20,7 @@
     "axios": "^1.18.1",
     "core-js": "^3.9.1",
     "es6-promise": "^4.2.8",
+    "mammoth": "^1.12.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "regenerator-runtime": "^0.13.7"
@@ -67,7 +68,12 @@
     "type": "git",
     "url": "https://github.com/Sunnyliu2025/WordGPT.git"
   },
-  "keywords": ["office-addin", "word", "deepseek", "AI"],
+  "keywords": [
+    "office-addin",
+    "word",
+    "deepseek",
+    "AI"
+  ],
   "author": "deepseekAI",
   "license": "MIT",
   "bugs": {
