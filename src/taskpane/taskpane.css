@@ -600,3 +600,57 @@ textarea.prompt-textarea::placeholder {
     padding: 24px 4px 12px;
   }
 }
+
+/* ===== 首屏加载骨架 / 占位 ===== */
+.app-boot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(100deg, #e9edf1 40%, #f6f8fa 50%, #e9edf1 60%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.skeleton-title {
+  width: 120px;
+  height: 20px;
+}
+
+.skeleton-subtitle {
+  width: 160px;
+  height: 12px;
+  margin-top: 8px;
+}
+
+.skeleton-block {
+  width: 100%;
+  height: 48px;
+  margin-top: 16px;
+}
+
+.skeleton-block.short {
+  width: 70%;
+}
+
+.skeleton-button {
+  width: 140px;
+  height: 40px;
+  border-radius: 22px;
+  margin: 20px auto 0;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

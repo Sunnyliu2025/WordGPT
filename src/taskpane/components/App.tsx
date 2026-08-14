@@ -6,6 +6,7 @@ import {
   MessageBar,
   MessageBarType,
 } from "@fluentui/react";
+import type { IButtonStyles } from "@fluentui/react";
 import axios from "axios";
 import Center from "./Center";
 import Container from "./Container";
@@ -32,8 +33,174 @@ interface AttachedFile {
   truncated: boolean;
 }
 
+/* ===== 静态样式常量：避免每次渲染都重建对象，降低重渲染开销 ===== */
+
+const CLEAR_BUTTON_STYLES: IButtonStyles = {
+  root: {
+    color: "#6b7280",
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    transition: "all 0.2s ease",
+  },
+  rootHovered: {
+    color: "#374151",
+    background: "rgba(0,0,0,0.06)",
+  },
+  icon: { fontSize: 16, fontWeight: 700 },
+};
+
+const TEXTAREA_STYLE: React.CSSProperties = {
+  display: "block",
+  width: "100%",
+  minWidth: "100%",
+  maxWidth: "100%",
+  minHeight: "160px",
+  maxHeight: "400px",
+  height: "160px",
+  boxSizing: "border-box",
+  padding: "16px 18px",
+  fontSize: "15px",
+  fontFamily:
+    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  lineHeight: "32px",
+  color: "#1f2937",
+  background: "#f9fafb",
+  border: "2px solid #e5e7eb",
+  borderRadius: "12px",
+  outline: "none",
+  resize: "none",
+  overflowY: "auto",
+  overflowX: "hidden",
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-word",
+  overflowWrap: "break-word",
+};
+
+const REMOVE_FILE_BUTTON_STYLES: IButtonStyles = {
+  root: {
+    color: "#9ca3af",
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    transition: "all 0.2s ease",
+  },
+  rootHovered: {
+    color: "#dc2626",
+    background: "rgba(220, 38, 38, 0.08)",
+  },
+  icon: { fontSize: 12, fontWeight: 700 },
+};
+
+const FILE_UPLOAD_BUTTON_STYLES: IButtonStyles = {
+  root: {
+    width: "100%",
+    height: 40,
+    borderRadius: 10,
+    border: "1.5px dashed #cbd5e1",
+    background: "#f8fafc",
+    color: "#64748b",
+    transition: "all 0.2s ease",
+  },
+  rootHovered: {
+    background: "#f0f5ff",
+    borderColor: "#3b82f6",
+    color: "#3b82f6",
+  },
+  flexContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  label: { fontWeight: 500, fontSize: 13 },
+};
+
+const ACTION_BUTTON_STYLES: IButtonStyles = {
+  root: {
+    borderRadius: 8,
+    height: 36,
+    padding: "0 16px",
+    transition: "all 0.2s ease",
+  },
+  rootHovered: {
+    background: "rgba(0, 122, 255, 0.08)",
+  },
+  icon: { color: "#007aff", fontSize: 14 },
+  label: {
+    fontWeight: 600,
+    fontSize: 13,
+    color: "#007aff",
+  },
+};
+
+/** 构建“生成”按钮样式（依赖 loading / promptReady，仅在二者变化时重建） */
+const buildGenerateButtonStyles = (
+  loading: boolean,
+  promptReady: boolean
+): IButtonStyles => ({
+  root: {
+    background:
+      "linear-gradient(135deg, #007aff 0%, #0a84ff 50%, #0060df 100%)",
+    color: "white",
+    margin: "20px 0 16px",
+    borderRadius: 22,
+    padding: "0 28px",
+    minWidth: 140,
+    height: 40,
+    border: "none",
+    position: "relative",
+    overflow: "hidden",
+    boxShadow: "0 4px 14px rgba(0, 122, 255, 0.35)",
+    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+    cursor: loading || !promptReady ? "not-allowed" : "pointer",
+    opacity: loading || !promptReady ? 0.6 : 1,
+    selectors: {
+      ":hover": {
+        background:
+          "linear-gradient(135deg, #0066d9 0%, #007aff 50%, #0055b3 100%)",
+        boxShadow: "0 6px 20px rgba(0, 122, 255, 0.45)",
+        transform:
+          loading || !promptReady ? "none" : "translateY(-1px) scale(1.02)",
+      },
+      ":active": {
+        background:
+          "linear-gradient(135deg, #0055b3 0%, #0060df 50%, #004499 100%)",
+        boxShadow: "0 2px 6px rgba(0, 122, 255, 0.3)",
+        transform:
+          loading || !promptReady ? "none" : "translateY(0) scale(0.98)",
+      },
+      "::after": {
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background:
+          "linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)",
+        pointerEvents: "none",
+      },
+    },
+  },
+  icon: {
+    color: "white",
+    fontSize: 14,
+    marginRight: 6,
+  },
+  label: {
+    fontWeight: 600,
+    fontSize: 14,
+    letterSpacing: "0.5px",
+  },
+  flexContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
+
 export default function App() {
   const [apiKey, setApiKey] = React.useState<string>("");
+  // 标记首次初始化是否完成（读取 localStorage 前不渲染主界面，避免“登录页一闪而过”的抖动）
+  const [initialized, setInitialized] = React.useState<boolean>(false);
   const [prompt, setPrompt] = React.useState<string>("");
   const [error, setError] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -49,10 +216,20 @@ export default function App() {
   const [showResult, setShowResult] = React.useState<boolean>(false);
   const [dots, setDots] = React.useState<string>("");
 
+  // 防重复提交 & 防止过期响应覆盖新结果
+  const submitGuardRef = React.useRef<boolean>(false);
+  const requestIdRef = React.useRef<number>(0);
+
   React.useEffect(() => {
-    const key = localStorage.getItem("apiKey");
-    if (key) {
-      setApiKey(key);
+    try {
+      const key = localStorage.getItem("apiKey");
+      if (key) {
+        setApiKey(key);
+      }
+    } catch (err) {
+      console.error("读取 localStorage 失败:", err);
+    } finally {
+      setInitialized(true);
     }
   }, []);
 
@@ -185,12 +362,18 @@ export default function App() {
   };
 
   const onClick = async () => {
+    // 防止重复提交（按钮 disabled 之外的第二道保险）
+    if (submitGuardRef.current) return;
+
     const trimmedPrompt = prompt.trim();
     const hasFileContent = !!attachedFile?.content;
     if (!trimmedPrompt && !hasFileContent) {
       setError("请输入提示词或上传文件");
       return;
     }
+
+    submitGuardRef.current = true;
+    const requestId = ++requestIdRef.current;
     setGeneratedText("");
     setShowResult(false);
     setLoading(true);
@@ -214,18 +397,26 @@ export default function App() {
         }
       );
 
+      // 响应已过期（期间发起了新请求），直接丢弃，避免旧结果覆盖新结果
+      if (requestId !== requestIdRef.current) return;
+
       const content = response.data?.choices?.[0]?.message?.content;
       if (!content) {
         throw new Error("API 返回了空响应");
       }
 
       setGeneratedText(content);
-      // 延迟显示结果以触发动画
+      // 延迟一帧设置可见状态，确保 opacity 过渡动画从 0 → 1 正常触发
       setTimeout(() => setShowResult(true), 50);
     } catch (err: unknown) {
+      if (requestId !== requestIdRef.current) return;
       handleApiError(err);
     } finally {
-      setLoading(false);
+      // 仅当是最新请求时才释放 loading 与提交锁
+      if (requestId === requestIdRef.current) {
+        setLoading(false);
+        submitGuardRef.current = false;
+      }
     }
   };
 
@@ -262,6 +453,34 @@ export default function App() {
   // 是否有有效内容（提示词或附件），用于控制生成按钮状态
   const promptReady = !!prompt.trim() || !!attachedFile?.content;
 
+  // 生成按钮样式仅在 loading / promptReady 变化时重建
+  const generateButtonStyles = React.useMemo(
+    () => buildGenerateButtonStyles(loading, promptReady),
+    [loading, promptReady]
+  );
+
+  // 首次初始化完成前展示骨架屏，避免“登录页一闪而过”的抖动
+  if (!initialized) {
+    return (
+      <Container>
+        <div className="app-wrapper">
+          <header className="app-header">
+            <div className="app-header-content">
+              <div className="skeleton skeleton-logo" />
+              <div className="app-header-text">
+                <div className="skeleton skeleton-title" />
+                <div className="skeleton skeleton-subtitle" />
+              </div>
+            </div>
+          </header>
+          <div className="skeleton skeleton-block" />
+          <div className="skeleton skeleton-block short" />
+          <div className="skeleton skeleton-button" />
+        </div>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <div className="app-wrapper">
@@ -286,20 +505,7 @@ export default function App() {
             title="清空"
             ariaLabel="清空"
             onClick={onClear}
-            styles={{
-              root: {
-                color: "#6b7280",
-                width: 32,
-                height: 32,
-                borderRadius: 8,
-                transition: "all 0.2s ease",
-              },
-              rootHovered: {
-                color: "#374151",
-                background: "rgba(0,0,0,0.06)",
-              },
-              icon: { fontSize: 16, fontWeight: 700 },
-            }}
+            styles={CLEAR_BUTTON_STYLES}
           />
         </header>
 
@@ -318,32 +524,7 @@ export default function App() {
                 value={prompt}
                 maxLength={MAX_PROMPT_LENGTH}
                 onChange={(e) => setPrompt(e.target.value)}
-                style={{
-                  display: "block",
-                  width: "100%",
-                  minWidth: "100%",
-                  maxWidth: "100%",
-                  minHeight: "160px",
-                  maxHeight: "400px",
-                  height: "160px",
-                  boxSizing: "border-box",
-                  padding: "16px 18px",
-                  fontSize: "15px",
-                  fontFamily:
-                    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  lineHeight: "32px",
-                  color: "#1f2937",
-                  background: "#f9fafb",
-                  border: "2px solid #e5e7eb",
-                  borderRadius: "12px",
-                  outline: "none",
-                  resize: "none",
-                  overflowY: "auto",
-                  overflowX: "hidden",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
-                  overflowWrap: "break-word",
-                }}
+                style={TEXTAREA_STYLE}
               />
 
               {/* ===== 文件上传区 ===== */}
@@ -374,47 +555,14 @@ export default function App() {
                       title="移除文件"
                       ariaLabel="移除文件"
                       onClick={onRemoveFile}
-                      styles={{
-                        root: {
-                          color: "#9ca3af",
-                          width: 28,
-                          height: 28,
-                          borderRadius: 6,
-                          transition: "all 0.2s ease",
-                        },
-                        rootHovered: {
-                          color: "#dc2626",
-                          background: "rgba(220, 38, 38, 0.08)",
-                        },
-                        icon: { fontSize: 12, fontWeight: 700 },
-                      }}
+                      styles={REMOVE_FILE_BUTTON_STYLES}
                     />
                   </div>
                 ) : (
                   <DefaultButton
                     className="file-upload-btn"
                     onClick={() => fileInputRef.current?.click()}
-                    styles={{
-                      root: {
-                        width: "100%",
-                        height: 40,
-                        borderRadius: 10,
-                        border: "1.5px dashed #cbd5e1",
-                        background: "#f8fafc",
-                        color: "#64748b",
-                        transition: "all 0.2s ease",
-                      },
-                      rootHovered: {
-                        background: "#f0f5ff",
-                        borderColor: "#3b82f6",
-                        color: "#3b82f6",
-                      },
-                      flexContainer: {
-                        justifyContent: "center",
-                        alignItems: "center",
-                      },
-                      label: { fontWeight: 500, fontSize: 13 },
-                    }}
+                    styles={FILE_UPLOAD_BUTTON_STYLES}
                   >
                     <span className="file-upload-btn-content">
                       <span className="file-upload-btn-icon" aria-hidden="true">
@@ -433,70 +581,7 @@ export default function App() {
                 iconProps={{ iconName: "Play" }}
                 onClick={onClick}
                 disabled={loading || !promptReady}
-                styles={{
-                  root: {
-                    background:
-                      "linear-gradient(135deg, #007aff 0%, #0a84ff 50%, #0060df 100%)",
-                    color: "white",
-                    margin: "20px 0 16px",
-                    borderRadius: 22,
-                    padding: "0 28px",
-                    minWidth: 140,
-                    height: 40,
-                    border: "none",
-                    position: "relative",
-                    overflow: "hidden",
-                    boxShadow: "0 4px 14px rgba(0, 122, 255, 0.35)",
-                    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                    cursor: loading || !promptReady ? "not-allowed" : "pointer",
-                    opacity: loading || !promptReady ? 0.6 : 1,
-                    selectors: {
-                      ":hover": {
-                        background:
-                          "linear-gradient(135deg, #0066d9 0%, #007aff 50%, #0055b3 100%)",
-                        boxShadow: "0 6px 20px rgba(0, 122, 255, 0.45)",
-                        transform:
-                          loading || !promptReady
-                            ? "none"
-                            : "translateY(-1px) scale(1.02)",
-                      },
-                      ":active": {
-                        background:
-                          "linear-gradient(135deg, #0055b3 0%, #0060df 50%, #004499 100%)",
-                        boxShadow: "0 2px 6px rgba(0, 122, 255, 0.3)",
-                        transform:
-                          loading || !promptReady
-                            ? "none"
-                            : "translateY(0) scale(0.98)",
-                      },
-                      "::after": {
-                        content: '""',
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background:
-                          "linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)",
-                        pointerEvents: "none",
-                      },
-                    },
-                  },
-                  icon: {
-                    color: "white",
-                    fontSize: 14,
-                    marginRight: 6,
-                  },
-                  label: {
-                    fontWeight: 600,
-                    fontSize: 14,
-                    letterSpacing: "0.5px",
-                  },
-                  flexContainer: {
-                    justifyContent: "center",
-                    alignItems: "center",
-                  },
-                }}
+                styles={generateButtonStyles}
               >
                 {loading ? "生成中..." : "生成"}
               </DefaultButton>
@@ -534,23 +619,7 @@ export default function App() {
                     className="btn-action"
                     iconProps={{ iconName: "AddTo" }}
                     onClick={onInsert}
-                    styles={{
-                      root: {
-                        borderRadius: 8,
-                        height: 36,
-                        padding: "0 16px",
-                        transition: "all 0.2s ease",
-                      },
-                      rootHovered: {
-                        background: "rgba(0, 122, 255, 0.08)",
-                      },
-                      icon: { color: "#007aff", fontSize: 14 },
-                      label: {
-                        fontWeight: 600,
-                        fontSize: 13,
-                        color: "#007aff",
-                      },
-                    }}
+                    styles={ACTION_BUTTON_STYLES}
                   >
                     插入文档
                   </CommandButton>
@@ -558,23 +627,7 @@ export default function App() {
                     className="btn-action"
                     iconProps={{ iconName: "Copy" }}
                     onClick={onCopy}
-                    styles={{
-                      root: {
-                        borderRadius: 8,
-                        height: 36,
-                        padding: "0 16px",
-                        transition: "all 0.2s ease",
-                      },
-                      rootHovered: {
-                        background: "rgba(0, 122, 255, 0.08)",
-                      },
-                      icon: { color: "#007aff", fontSize: 14 },
-                      label: {
-                        fontWeight: 600,
-                        fontSize: 13,
-                        color: "#007aff",
-                      },
-                    }}
+                    styles={ACTION_BUTTON_STYLES}
                   >
                     复制文本
                   </CommandButton>

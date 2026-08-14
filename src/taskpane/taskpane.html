@@ -9,6 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>WordGPT</title>
 
+    <!-- 预连接 Office / 资源 CDN，缩短首次加载的连接建立时间 -->
+    <link rel="preconnect" href="https://appsforoffice.microsoft.com" crossorigin />
+    <link rel="preconnect" href="https://static2.sharepointonline.com" crossorigin />
+    <link rel="preconnect" href="https://res.cdn.office.net" crossorigin />
+
     <!-- Office JavaScript API -->
     <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
 
@@ -23,6 +28,15 @@
   </head>
 
   <body class="ms-font-m ms-Fabric">
-    <div id="container"></div>
+    <div id="container">
+      <!-- 首屏占位：JS 就绪前展示轻量加载骨架，避免白屏闪动 -->
+      <div class="app-boot" aria-hidden="true">
+        <div class="skeleton skeleton-logo"></div>
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-subtitle"></div>
+        <div class="skeleton skeleton-block"></div>
+        <div class="skeleton skeleton-block short"></div>
+      </div>
+    </div>
   </body>
 </html>
